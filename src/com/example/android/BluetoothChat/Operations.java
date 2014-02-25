@@ -42,6 +42,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -116,6 +117,10 @@ public class Operations extends Activity {
             finish();
             return;
         }
+        
+        addToggleButton("Y", 20, 20);
+        addToggleButton("X", 20, 400);
+        
     }
 
     
@@ -212,6 +217,37 @@ public class Operations extends Activity {
 		return super.onTouchEvent(event);
 	}
 	
+	private void addToggleButton(String address, float x, float y) {
+		
+        tb = new ToggleButton(this);
+		tb.setTag(address);
+		tb.setX(x);
+		tb.setY(y);
+		tb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+		        if(isChecked)
+		        {
+					sBuilder = new StringBuilder();
+					sBuilder.append((String) buttonView.getTag());
+					sBuilder.append("8A2BE2");
+					Toast.makeText(main, sBuilder.toString(), 1).show();
+					sendMessage(sBuilder.toString());
+		        }
+		        else
+		        {
+					sBuilder = new StringBuilder();
+					sBuilder.append((String) buttonView.getTag());
+					sBuilder.append("000000");
+					Toast.makeText(main, sBuilder.toString(), 1).show();
+					sendMessage(sBuilder.toString());
+		        }
+		    }
+		});
+        mainRelativeLayout.addView(tb);
+		
+	}
 	
 	/*protected class DragEventListener implements View.OnDragListener
 	{
