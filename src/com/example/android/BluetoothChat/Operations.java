@@ -118,8 +118,8 @@ public class Operations extends Activity {
             return;
         }
         
-        addToggleButton("Y", 20, 20);
-        addToggleButton("X", 20, 400);
+        addToggleButton("y", 20, 20);
+        addToggleButton("x", 20, 400);
         
     }
 
@@ -523,8 +523,8 @@ public class Operations extends Activity {
         case R.id.action_reset:
 			Toast.makeText(this,  "Reset selected", Toast.LENGTH_SHORT).show();
 			mainRelativeLayout.removeAllViews(); // clears the screen
-	        addToggleButton("Y", 20, 20);
-	        addToggleButton("X", 20, 400);
+	        addToggleButton("y", 20, 20);
+	        addToggleButton("x", 20, 400);
 			break;
         }
         return false;
