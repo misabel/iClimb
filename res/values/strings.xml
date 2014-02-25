@@ -39,4 +39,14 @@
     <string name="insecure_connect">Connect a device - Insecure</string>
     <string name="discoverable">Make discoverable</string>
     <string name="action_reset">Reset clicked</string>
+    <string name="color_select">Color Selected</string>
+    
+    <!-- Different Colored Pencils... -->
+    <string name="purple_pencil">Purple Pencil</string>
+    <string name="red_pencil">Red Pencil</string>
+    <string name="blue_pencil">Blue Pencil</string>
+    <string name="green_pencil">Green Pencil</string>
+    <string name="yellow_pencil">Yellow Pencil</string>
+    <string name="cyan_pencil">Cyan Pencil</string>
+    <string name="white_pencil">White Pencil</string>
 </resources>

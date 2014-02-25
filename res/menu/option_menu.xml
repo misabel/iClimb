@@ -30,4 +30,11 @@
         android:showAsAction="always" 
         android:icon="@drawable/ic_action_reset">
     </item>
+    <item 
+        android:id="@+id/color_select" 
+        android:title="@string/color_select" 
+        android:icon="@drawable/ic_action_color_select" 
+        android:showAsAction="ifRoom" 
+        android:orderInCategory="80"></item>
+     
 </menu>

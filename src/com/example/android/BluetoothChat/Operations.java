@@ -16,6 +16,7 @@
 
 package com.example.android.BluetoothChat;
 
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -59,7 +60,16 @@ public class Operations extends Activity {
     // Debugging
     //private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
-
+    
+    private int count = 0;
+    private String[] diffColors = { "White", "Red", "Yellow", "Green", "Cyan", "Blue", "Violet" };
+	private String[] hexEquiv = { "FFFFFF", "FF0000", "FFFF00", "00FF00", "00FFFFF", "0000FF", "FF00FF" };
+    private MenuItem drawButton;
+    private int[] arr = {R.drawable.ic_action_edit,        R.drawable.ic_action_edit_red, 
+    					 R.drawable.ic_action_edit_yellow, R.drawable.ic_action_edit_green, 
+    					 R.drawable.ic_action_edit_cyan,   R.drawable.ic_action_edit_blue,
+    					 R.drawable.ic_action_edit_purple};
+    
     // Message types sent from the BluetoothChatService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
@@ -150,7 +160,7 @@ public class Operations extends Activity {
 					{
 						sBuilder = new StringBuilder();
 						sBuilder.append((String) buttonView.getTag());
-						sBuilder.append("8A2BE2");
+						sBuilder.append(hexEquiv[count]);
 						Toast.makeText(main, sBuilder.toString(), 1).show();
 						sendMessage(sBuilder.toString());
 					}
@@ -231,7 +241,7 @@ public class Operations extends Activity {
 		        {
 					sBuilder = new StringBuilder();
 					sBuilder.append((String) buttonView.getTag());
-					sBuilder.append("8A2BE2");
+					sBuilder.append(hexEquiv[count]);
 					Toast.makeText(main, sBuilder.toString(), 1).show();
 					sendMessage(sBuilder.toString());
 		        }
@@ -499,6 +509,8 @@ public class Operations extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.option_menu, menu);
+
+        drawButton = menu.findItem(R.id.color_select);
         return true;
     }
 
@@ -525,6 +537,16 @@ public class Operations extends Activity {
 			mainRelativeLayout.removeAllViews(); // clears the screen
 	        addToggleButton("y", 20, 20);
 	        addToggleButton("x", 20, 400);
+			break;
+			
+        case R.id.color_select:
+			count++;
+			if( count > 6 ) {
+				count = 0;
+			} // end IF
+			drawButton.setIcon(arr[count]);
+			Toast.makeText(this, diffColors[count] + " selected!", Toast.LENGTH_SHORT).show();
+			
 			break;
         }
         return false;
