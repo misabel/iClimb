@@ -44,6 +44,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -64,7 +65,7 @@ public class Operations extends Activity {
     private int count = 0;
     private String[] diffColors = { "White", "Red", "Yellow", "Green", "Cyan", "Blue", "Violet" };
 	private String[] hexEquiv = { "FFFFFF", "FF0000", "FFFF00", "00FF00", "00FFFFF", "0000FF", "FF00FF" };
-    private MenuItem drawButton;
+    private MenuItem drawButton, undoButton;
     private int[] arr = {R.drawable.ic_action_edit,        R.drawable.ic_action_edit_red, 
     					 R.drawable.ic_action_edit_yellow, R.drawable.ic_action_edit_green, 
     					 R.drawable.ic_action_edit_cyan,   R.drawable.ic_action_edit_blue,
@@ -76,6 +77,8 @@ public class Operations extends Activity {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+    public static final int STOP_DRAGGING = 0;
+    public static final int START_DRAGGING = 1;
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
@@ -99,14 +102,20 @@ public class Operations extends Activity {
     
     RelativeLayout mainRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
-	ToggleButton tb;
+	CustomButton tb;
+	int status;
 	Operations main = this;
 	StringBuilder sBuilder;
 	//DragEventListener dragListen = new DragEventListener();
 	private static final String TAG = "z";
+	
+	
 
 
     @Override
+    /**
+     * When page is first loaded, this method is called
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
@@ -128,13 +137,80 @@ public class Operations extends Activity {
             return;
         }
         
-        addToggleButton("y", 20, 20);
+        addToggleButton("y", 20, 20); // place buttons for prototyping purposes only
         addToggleButton("x", 20, 400);
         
     }
+    
+    @Override
+    /*
+     * Called when Action Bar is created
+     */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.option_menu, menu);
+
+        drawButton = menu.findItem(R.id.color_select);
+        undoButton = menu.findItem(R.id.undo);
+        return true;
+    }
+
+    @Override
+    /*
+     * This method is called when one of the options on the Action Bar is selected
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent serverIntent = null;
+        switch (item.getItemId()) {
+        case R.id.secure_connect_scan:
+            // Launch the DeviceListActivity to see devices and do scan
+            serverIntent = new Intent(this, DeviceListActivity.class);
+            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+            return true;
+        case R.id.discoverable:
+            // Ensure this device is discoverable by others
+            ensureDiscoverable();
+            return true;
+        case R.id.action_reset: // When Reset button is selected
+			Toast.makeText(this,  "Reset selected", Toast.LENGTH_SHORT).show();
+			mainRelativeLayout.removeAllViews(); // clears the screen
+	        addToggleButton("y", 200, 1000);
+	        addToggleButton("x", 20, 400);
+			break;
+			
+        case R.id.color_select: // Button that goes through all the colors that user can select
+			count++;
+			if( count > 6 ) {
+				count = 0;
+			} // end IF
+			drawButton.setIcon(arr[count]);
+			Toast.makeText(this, diffColors[count] + " selected!", Toast.LENGTH_SHORT).show();
+			
+			break;
+			
+        case R.id.undo: // Button undos user's last placed node or hold
+        	if(tb.getBefore()!=null)
+        	{
+        		CustomButton toRemove = tb; // Set current button to "toRemove"
+        		tb = toRemove.getBefore(); // Get pointer to button that came before "toRemove" and set it to be the current button
+        		mainRelativeLayout.removeView(toRemove);
+        		if(tb.getBefore()==null) undoButton.setEnabled(false); // if there is not button before the current one that is to be deleted, disable the Undo button
+        	}
+        	
+        }
+        return false;
+    }
 
     
-    
+    /**
+     * This method will place button on the Relative Layout of the app
+     * @param button - Button to be placed on the view
+     * @param centerInParent
+     * @param marginLeft
+     * @param marginTop
+     * @param marginRight
+     * @param marginBottom
+     */
     public void AddButtonLayout(Button button, int centerInParent, int marginLeft, int marginTop, int marginRight, int marginBottom) 
     {
         RelativeLayout.LayoutParams buttonLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -149,33 +225,15 @@ public class Operations extends Activity {
 	public boolean onTouchEvent(MotionEvent event) {
 		if(event.getAction() == MotionEvent.ACTION_DOWN)
 		{
+			if(!undoButton.isEnabled())undoButton.setEnabled(true);
+			CustomButton temp = tb; // take current button and place it in a temporary variable
 			
-			  tb = new ToggleButton(this);
-			  tb.setTag(TAG);
-			  tb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-				
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked)
-					{
-						sBuilder = new StringBuilder();
-						sBuilder.append((String) buttonView.getTag());
-						sBuilder.append(hexEquiv[count]);
-						Toast.makeText(main, sBuilder.toString(), 1).show();
-						sendMessage(sBuilder.toString());
-					}
-					else
-					{
-						sBuilder = new StringBuilder();
-						sBuilder.append((String)buttonView.getTag());
-						sBuilder.append("000000");
-						Toast.makeText(main, sBuilder.toString(), 1).show();
-						sendMessage(sBuilder.toString());
-					}
+			  tb = new CustomButton(this); // create a new button
+			  tb.setBefore(temp); // place the temporary to be the button before the one just created
+			  addToggleButton(TAG, event.getX(), event.getY());
 					
-				}
-			});
-			  tb.setOnLongClickListener(new View.OnLongClickListener() {
+			
+			  tb.setOnLongClickListener(new View.OnLongClickListener() { // When user taps on button for a long time
 			
 				@Override
 				public boolean onLongClick(View v) {
@@ -183,9 +241,9 @@ public class Operations extends Activity {
 					ClipData.Item item = new ClipData.Item((CharSequence) tb.getTag());
 					ClipData dragData = new ClipData((CharSequence)tb.getTag(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
 
-					View.DragShadowBuilder myShadow = new View.DragShadowBuilder(tb);
+					View.DragShadowBuilder myShadow = new View.DragShadowBuilder(tb); // create shadow as the user drags the button
 					
-					v.startDrag(dragData, myShadow, null, 0);
+					v.startDrag(dragData, myShadow, null, 0); // will start drag of shadow created for the button
 					
 					return false;
 				}
@@ -193,33 +251,52 @@ public class Operations extends Activity {
 				
 			  });
 			  
-			  //tb.setOnDragListener(new DragEventListener());
 			  
-			  
-			  //tb.setOnDragListener(dragListen);
-			/*  tb.setOnTouchListener(new View.OnTouchListener(){
+			 tb.setOnTouchListener(new View.OnTouchListener(){
 
 				@Override
 				public boolean onTouch(View v, MotionEvent me) {
-					if(me.getAction() == MotionEvent.
+					
+					if(me.getAction() == MotionEvent.ACTION_DOWN)
 					{
-						ViewGroup.MarginLayoutParams mParams = new ViewGroup.MarginLayoutParams(v.getLayoutParams());
-						
-						int left = (int) me.getX();//- (v.getWidth()/2);
+						status = START_DRAGGING;
+					}
+					
+					if(me.getAction() == MotionEvent.ACTION_UP)
+					{
+						status = STOP_DRAGGING;
+					}
+			
+					else if(me.getAction() == MotionEvent.ACTION_MOVE)
+					{
+						//ViewGroup.MarginLayoutParams mParams = new ViewGroup.MarginLayoutParams(v.getLayoutParams());
+						if(status == START_DRAGGING)
+						{
+							//RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(50, 50);
+							
+							//layoutParams.setMargins((int) me.getRawX() -25, (int) me.getRawY()-50, 0,0);
+							//mainRelativeLayout.removeView(v);
+							AddButtonLayout((CustomButton)v, RelativeLayout.ALIGN_PARENT_LEFT, (int)me.getX(), (int)me.getY(), 0, 0);
+							v.invalidate();
+						}
+						//tb.setX(me.getX());
+						//tb.setY(me.getY());
+						/*int left = (int) me.getX();//- (v.getWidth()/2);
 						int top = (int) me.getY();// - (v.getWidth()/2);
 						mParams.setMargins(left, top-200, 0, 0);
 						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mParams);
-						v.setLayoutParams(layoutParams);
+						v.setLayoutParams(layoutParams);*/
 					      
 					}
 					return false;
 				}  
-			  });   */
+			  });   
 			  //mainRelativeLayout.setOnDragListener(dragListen);
 		        tb.setText(".");
-
+		        tb.setX(event.getX()-75);
+		        tb.setY(event.getY()-200);
 		        // Add a Layout to the Button with Margin
-		        AddButtonLayout(tb, RelativeLayout.ALIGN_PARENT_LEFT, Math.round(event.getX()), Math.round(event.getY()) - 200, 0, 0);
+		        //AddButtonLayout(tb, RelativeLayout.ALIGN_PARENT_LEFT, Math.round(event.getX()), Math.round(event.getY()) - 200, 0, 0);
 		        mainRelativeLayout.addView(tb);
 		        
 				
@@ -227,35 +304,40 @@ public class Operations extends Activity {
 		return super.onTouchEvent(event);
 	}
 	
+	
+	/**
+	 * This method will add button to interface
+	 * @param address - string that will be associated with this button. You can get the string by calling getTag()
+	 * @param x - horizontal coordinate of where the user desires to place button
+	 * @param y - vertical coordinate of where the user desires to place button
+	 */
 	private void addToggleButton(String address, float x, float y) {
 		
-        tb = new ToggleButton(this);
-		tb.setTag(address);
-		tb.setX(x);
-		tb.setY(y);
-		tb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        tb = new CustomButton(this); // Create new button
+		tb.setTag(address); // set tag to be address
+		tb.setX(x-75); // set its X coordinate
+		tb.setY(y-200); // set its Y coordinate
+		tb.setOnCheckedChangeListener(new OnCheckedChangeListener() { // add listener for when button is toggled
 
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-		        if(isChecked)
+		    	sBuilder = new StringBuilder(); // create a new string builder
+				sBuilder.append((String) buttonView.getTag()); // append address associated with button
+				
+		        if(isChecked) // if button is toggled ON
 		        {
-					sBuilder = new StringBuilder();
-					sBuilder.append((String) buttonView.getTag());
-					sBuilder.append(hexEquiv[count]);
-					Toast.makeText(main, sBuilder.toString(), 1).show();
-					sendMessage(sBuilder.toString());
+					sBuilder.append(hexEquiv[count]); // append hex value of color currently selected
 		        }
-		        else
+		        else // if button is toggled OFF
 		        {
-					sBuilder = new StringBuilder();
-					sBuilder.append((String) buttonView.getTag());
 					sBuilder.append("000000");
-					Toast.makeText(main, sBuilder.toString(), 1).show();
-					sendMessage(sBuilder.toString());
 		        }
+		        
+		        Toast.makeText(main, sBuilder.toString(), 1).show(); // display string to be sent on screen
+				sendMessage(sBuilder.toString()); // send string via bluetooth
 		    }
 		});
-        mainRelativeLayout.addView(tb);
+        mainRelativeLayout.addView(tb); // Finally, add this button to the view
 		
 	}
 	
@@ -505,51 +587,5 @@ public class Operations extends Activity {
         mChatService.connect(device, secure);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.option_menu, menu);
-
-        drawButton = menu.findItem(R.id.color_select);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent serverIntent = null;
-        switch (item.getItemId()) {
-        case R.id.secure_connect_scan:
-            // Launch the DeviceListActivity to see devices and do scan
-            serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-            return true;
-       /* case R.id.insecure_connect_scan:
-            // Launch the DeviceListActivity to see devices and do scan
-            serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-            return true;*/
-        case R.id.discoverable:
-            // Ensure this device is discoverable by others
-            ensureDiscoverable();
-            return true;
-        case R.id.action_reset:
-			Toast.makeText(this,  "Reset selected", Toast.LENGTH_SHORT).show();
-			mainRelativeLayout.removeAllViews(); // clears the screen
-	        addToggleButton("y", 20, 20);
-	        addToggleButton("x", 20, 400);
-			break;
-			
-        case R.id.color_select:
-			count++;
-			if( count > 6 ) {
-				count = 0;
-			} // end IF
-			drawButton.setIcon(arr[count]);
-			Toast.makeText(this, diffColors[count] + " selected!", Toast.LENGTH_SHORT).show();
-			
-			break;
-        }
-        return false;
-    }
 
 }

@@ -27,14 +27,19 @@
         android:id="@+id/action_reset" 
         android:title="@string/action_reset" 
         android:orderInCategory="90" 
-        android:showAsAction="always" 
-        android:icon="@drawable/ic_action_reset">
-    </item>
+        android:icon="@drawable/ic_action_reset"
+        android:showAsAction="always" />
     <item 
         android:id="@+id/color_select" 
         android:title="@string/color_select" 
         android:icon="@drawable/ic_action_color_select" 
         android:showAsAction="ifRoom" 
         android:orderInCategory="80"></item>
+      <item 
+        android:id="@+id/undo" 
+        android:title="Undo" 
+        android:showAsAction="ifRoom" 
+        android:orderInCategory="80"></item>
+      
      
 </menu>
