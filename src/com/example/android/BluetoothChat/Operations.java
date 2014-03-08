@@ -102,7 +102,7 @@ public class Operations extends Activity {
     
     RelativeLayout mainRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
-	CustomButton tb;
+	CustomButton tb = null;
 	int status;
 	Operations main = this;
 	StringBuilder sBuilder;
@@ -123,6 +123,7 @@ public class Operations extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
         mainRelativeLayout = new RelativeLayout(this);
+        
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         
         setContentView(mainRelativeLayout, relativeLayoutParameters);
@@ -137,9 +138,6 @@ public class Operations extends Activity {
             return;
         }
         
-        addToggleButton("y", 20, 20); // place buttons for prototyping purposes only
-        addToggleButton("x", 20, 400);
-        
     }
     
     @Override
@@ -152,6 +150,7 @@ public class Operations extends Activity {
 
         drawButton = menu.findItem(R.id.color_select);
         undoButton = menu.findItem(R.id.undo);
+        undoButton.setEnabled(false);
         return true;
     }
 
@@ -189,14 +188,15 @@ public class Operations extends Activity {
 			break;
 			
         case R.id.undo: // Button undos user's last placed node or hold
-        	if(tb.getBefore()!=null)
+        	
+            if(tb!=null)
         	{
         		CustomButton toRemove = tb; // Set current button to "toRemove"
         		tb = toRemove.getBefore(); // Get pointer to button that came before "toRemove" and set it to be the current button
         		mainRelativeLayout.removeView(toRemove);
-        		if(tb.getBefore()==null) undoButton.setEnabled(false); // if there is not button before the current one that is to be deleted, disable the Undo button
+        		if(tb==null) undoButton.setEnabled(false); // if there is not button before the current one that is to be deleted, disable the Undo button
         	}
-        	
+        	break;
         }
         return false;
     }
@@ -225,81 +225,7 @@ public class Operations extends Activity {
 	public boolean onTouchEvent(MotionEvent event) {
 		if(event.getAction() == MotionEvent.ACTION_DOWN)
 		{
-			if(!undoButton.isEnabled())undoButton.setEnabled(true);
-			CustomButton temp = tb; // take current button and place it in a temporary variable
-			
-			  tb = new CustomButton(this); // create a new button
-			  tb.setBefore(temp); // place the temporary to be the button before the one just created
-			  addToggleButton(TAG, event.getX(), event.getY());
-					
-			
-			  tb.setOnLongClickListener(new View.OnLongClickListener() { // When user taps on button for a long time
-			
-				@Override
-				public boolean onLongClick(View v) {
-					
-					ClipData.Item item = new ClipData.Item((CharSequence) tb.getTag());
-					ClipData dragData = new ClipData((CharSequence)tb.getTag(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
-
-					View.DragShadowBuilder myShadow = new View.DragShadowBuilder(tb); // create shadow as the user drags the button
-					
-					v.startDrag(dragData, myShadow, null, 0); // will start drag of shadow created for the button
-					
-					return false;
-				}
-				
-				
-			  });
-			  
-			  
-			 tb.setOnTouchListener(new View.OnTouchListener(){
-
-				@Override
-				public boolean onTouch(View v, MotionEvent me) {
-					
-					if(me.getAction() == MotionEvent.ACTION_DOWN)
-					{
-						status = START_DRAGGING;
-					}
-					
-					if(me.getAction() == MotionEvent.ACTION_UP)
-					{
-						status = STOP_DRAGGING;
-					}
-			
-					else if(me.getAction() == MotionEvent.ACTION_MOVE)
-					{
-						//ViewGroup.MarginLayoutParams mParams = new ViewGroup.MarginLayoutParams(v.getLayoutParams());
-						if(status == START_DRAGGING)
-						{
-							//RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(50, 50);
-							
-							//layoutParams.setMargins((int) me.getRawX() -25, (int) me.getRawY()-50, 0,0);
-							//mainRelativeLayout.removeView(v);
-							AddButtonLayout((CustomButton)v, RelativeLayout.ALIGN_PARENT_LEFT, (int)me.getX(), (int)me.getY(), 0, 0);
-							v.invalidate();
-						}
-						//tb.setX(me.getX());
-						//tb.setY(me.getY());
-						/*int left = (int) me.getX();//- (v.getWidth()/2);
-						int top = (int) me.getY();// - (v.getWidth()/2);
-						mParams.setMargins(left, top-200, 0, 0);
-						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mParams);
-						v.setLayoutParams(layoutParams);*/
-					      
-					}
-					return false;
-				}  
-			  });   
-			  //mainRelativeLayout.setOnDragListener(dragListen);
-		        tb.setText(".");
-		        tb.setX(event.getX()-75);
-		        tb.setY(event.getY()-200);
-		        // Add a Layout to the Button with Margin
-		        //AddButtonLayout(tb, RelativeLayout.ALIGN_PARENT_LEFT, Math.round(event.getX()), Math.round(event.getY()) - 200, 0, 0);
-		        mainRelativeLayout.addView(tb);
-		        
-				
+			addToggleButton(TAG, event.getX(), event.getY());
 		}
 		return super.onTouchEvent(event);
 	}
@@ -311,16 +237,71 @@ public class Operations extends Activity {
 	 * @param x - horizontal coordinate of where the user desires to place button
 	 * @param y - vertical coordinate of where the user desires to place button
 	 */
-	private void addToggleButton(String address, float x, float y) {
+	private void addToggleButton(String address, float x, float y) 
+	{
 		
-        tb = new CustomButton(this); // Create new button
+		if(!undoButton.isEnabled())undoButton.setEnabled(true);
+		
+		CustomButton temp = tb; // take current button and place it in a temporary variable
+		tb = new CustomButton(this);
+		tb.setBefore(temp);
 		tb.setTag(address); // set tag to be address
 		tb.setX(x-75); // set its X coordinate
 		tb.setY(y-200); // set its Y coordinate
+			
+		tb.setOnLongClickListener(new View.OnLongClickListener()
+		{ // When user taps on button for a long time
+		
+			@Override
+			public boolean onLongClick(View v)
+			{
+				ClipData.Item item = new ClipData.Item((CharSequence) tb.getTag());
+				ClipData dragData = new ClipData((CharSequence)tb.getTag(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+				View.DragShadowBuilder myShadow = new View.DragShadowBuilder(tb); // create shadow as the user drags the button
+				v.startDrag(dragData, myShadow, null, 0); // will start drag of shadow created for the button
+				
+				return false;
+			}
+			
+		  });
+		  
+		  
+		 tb.setOnTouchListener(new View.OnTouchListener()
+		 {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent me) 
+			{
+				
+				if(me.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					status = START_DRAGGING;
+				}
+				
+				if(me.getAction() == MotionEvent.ACTION_UP)
+				{
+					status = STOP_DRAGGING;
+				}
+		
+				else if(me.getAction() == MotionEvent.ACTION_MOVE)
+				{
+					if(status == START_DRAGGING)
+					{
+						AddButtonLayout((CustomButton)v, RelativeLayout.ALIGN_PARENT_LEFT, (int)me.getX(), (int)me.getY(), 0, 0);
+						v.invalidate();
+					}
+				      
+				}
+				return false;
+			}  
+			
+		  });   
+		  //mainRelativeLayout.setOnDragListener(dragListen);
+
 		tb.setOnCheckedChangeListener(new OnCheckedChangeListener() { // add listener for when button is toggled
 
-		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
+		    {
 		    	sBuilder = new StringBuilder(); // create a new string builder
 				sBuilder.append((String) buttonView.getTag()); // append address associated with button
 				
@@ -336,43 +317,11 @@ public class Operations extends Activity {
 		        Toast.makeText(main, sBuilder.toString(), 1).show(); // display string to be sent on screen
 				sendMessage(sBuilder.toString()); // send string via bluetooth
 		    }
+		    
 		});
         mainRelativeLayout.addView(tb); // Finally, add this button to the view
 		
 	}
-	
-	/*protected class DragEventListener implements View.OnDragListener
-	{
-		public boolean onDrag(View v, DragEvent event)
-		{
-			final int action = event.getAction();
-			
-			switch(action)
-			{
-			
-			case DragEvent.ACTION_DROP:
-			    
-			    /*View view = (View) event.getLocalState();
-			      ViewGroup owner = (ViewGroup) view.getParent();
-			      owner.removeView(view);
-			      RelativeLayout container = (RelativeLayout) mainRelativeLayout;
-			      container.addView(view);
-			      view.setVisibility(View.VISIBLE);
-				ClipData d = event.getClipData();
-				
-				ViewGroup.MarginLayoutParams mParams = new ViewGroup.MarginLayoutParams(v.getLayoutParams());
-				
-				int left = (int) event.getX() - (v.getWidth()/2);
-				int top = (int) event.getY() - (v.getWidth()/2);
-				mParams.setMargins(left, top-200, 0, 0);
-				RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mParams);
-				v.setLayoutParams(layoutParams);
-				Toast.makeText(main, "im here", Toast.LENGTH_SHORT).show();
-			      break;
-			}
-			return true;
-		}
-	}*/
     
     
     @Override
