@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package com.example.android.BluetoothChat;
+package com.example.android.iClimb;
 
+
+import java.util.ArrayList;
+
+import com.example.android.iClimb.R;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -57,8 +61,9 @@ import android.widget.ToggleButton;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @SuppressLint({ "InlinedApi", "HandlerLeak" })
-public class Operations extends Activity {
-    // Debugging
+public class ClimbActivity extends Activity {
+	
+	// Debugging
     //private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
     
@@ -102,9 +107,9 @@ public class Operations extends Activity {
     
     RelativeLayout mainRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
-	CustomButton tb = null;
+	Node tb = null;
 	int status;
-	Operations main = this;
+	ClimbActivity main = this;
 	StringBuilder sBuilder;
 	//DragEventListener dragListen = new DragEventListener();
 	private static final String TAG = "z";
@@ -144,13 +149,12 @@ public class Operations extends Activity {
     /*
      * Called when Action Bar is created
      */
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.option_menu, menu);
-
         drawButton = menu.findItem(R.id.color_select);
-        undoButton = menu.findItem(R.id.undo);
-        undoButton.setEnabled(false);
+        
         return true;
     }
 
@@ -186,17 +190,6 @@ public class Operations extends Activity {
 			Toast.makeText(this, diffColors[count] + " selected!", Toast.LENGTH_SHORT).show();
 			
 			break;
-			
-        case R.id.undo: // Button undos user's last placed node or hold
-        	
-            if(tb!=null)
-        	{
-        		CustomButton toRemove = tb; // Set current button to "toRemove"
-        		tb = toRemove.getBefore(); // Get pointer to button that came before "toRemove" and set it to be the current button
-        		mainRelativeLayout.removeView(toRemove);
-        		if(tb==null) undoButton.setEnabled(false); // if there is not button before the current one that is to be deleted, disable the Undo button
-        	}
-        	break;
         }
         return false;
     }
@@ -221,16 +214,6 @@ public class Operations extends Activity {
     }
 
 	
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		if(event.getAction() == MotionEvent.ACTION_DOWN)
-		{
-			addToggleButton(TAG, event.getX(), event.getY());
-		}
-		return super.onTouchEvent(event);
-	}
-	
-	
 	/**
 	 * This method will add button to interface
 	 * @param address - string that will be associated with this button. You can get the string by calling getTag()
@@ -242,8 +225,8 @@ public class Operations extends Activity {
 		
 		if(!undoButton.isEnabled())undoButton.setEnabled(true);
 		
-		CustomButton temp = tb; // take current button and place it in a temporary variable
-		tb = new CustomButton(this);
+		Node temp = tb; // take current button and place it in a temporary variable
+		tb = new Node(this);
 		tb.setBefore(temp);
 		tb.setTag(address); // set tag to be address
 		tb.setX(x-75); // set its X coordinate
@@ -287,7 +270,7 @@ public class Operations extends Activity {
 				{
 					if(status == START_DRAGGING)
 					{
-						AddButtonLayout((CustomButton)v, RelativeLayout.ALIGN_PARENT_LEFT, (int)me.getX(), (int)me.getY(), 0, 0);
+						AddButtonLayout((Node)v, RelativeLayout.ALIGN_PARENT_LEFT, (int)me.getX(), (int)me.getY(), 0, 0);
 						v.invalidate();
 					}
 				      

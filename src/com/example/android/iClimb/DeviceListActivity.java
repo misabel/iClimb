@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.example.android.BluetoothChat;
+package com.example.android.iClimb;
 
 import java.util.Set;
+
+import com.example.android.BluetoothChat.R;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
