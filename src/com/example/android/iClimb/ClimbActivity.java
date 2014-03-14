@@ -19,12 +19,13 @@ package com.example.android.iClimb;
 
 import java.util.ArrayList;
 
-import com.example.android.iClimb.R;
+import com.example.android.BluetoothChat.R;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ClipData;
@@ -44,6 +45,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -52,6 +54,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -113,16 +116,19 @@ public class ClimbActivity extends Activity {
 	StringBuilder sBuilder;
 	//DragEventListener dragListen = new DragEventListener();
 	private static final String TAG = "z";
-	
-	
 
-
+	private ArrayList<Node> nodes = new ArrayList<Node>();
+	private Node node;
+	ArrayList<String> routeToDisplayAddresses;
+	 Dialog dialog;
     @Override
     /**
      * When page is first loaded, this method is called
      */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        node = new Node(this, null);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
@@ -142,7 +148,17 @@ public class ClimbActivity extends Activity {
             finish();
             return;
         }
-        
+       
+        ArrayList<Node> refNodes = SetupActivity.nodes;
+        for(int i = 0 ; i < refNodes.size() ; i++)
+        {
+        	Node reference = refNodes.get(i);
+        	node = new Node(this, node.getBefore(), reference.getAddress(), reference.getX(), reference.getY());
+        	mainRelativeLayout.addView(node);
+        	nodes.add(node);
+        	
+        	
+        }
     }
     
     @Override
@@ -174,13 +190,6 @@ public class ClimbActivity extends Activity {
             // Ensure this device is discoverable by others
             ensureDiscoverable();
             return true;
-        case R.id.action_reset: // When Reset button is selected
-			Toast.makeText(this,  "Reset selected", Toast.LENGTH_SHORT).show();
-			mainRelativeLayout.removeAllViews(); // clears the screen
-	        addToggleButton("y", 200, 1000);
-	        addToggleButton("x", 20, 400);
-			break;
-			
         case R.id.color_select: // Button that goes through all the colors that user can select
 			count++;
 			if( count > 6 ) {
@@ -190,7 +199,55 @@ public class ClimbActivity extends Activity {
 			Toast.makeText(this, diffColors[count] + " selected!", Toast.LENGTH_SHORT).show();
 			
 			break;
+			
+        case R.id.action_save:
+        	Route route = new Route("random");
+        	for(int i = 0 ; i < nodes.size() ; i++)
+        	{
+        		String currNodeAddress = nodes.get(i).getAddress();
+        		route.addNode(currNodeAddress);
+    
+        	}
+        	Wall.saveRoute(route);
+        	Toast.makeText(this, "Path has been saved", Toast.LENGTH_SHORT).show();
+        	break;
+        	
+        case R.id.action_load:
+        	 dialog = new Dialog(this);
+        	
+        	dialog.setContentView(R.layout.route_list);
+        	ArrayAdapter<String> routesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Wall.getRoutNames());
+        	ListView routeList = (ListView)dialog.findViewById(R.id.route_list);
+        	routeList.setAdapter(routesAdapter);
+        	
+        	routeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+				    int position, long arg3) {
+					Toast.makeText(main, "" + Wall.getRoutNames().get(position), Toast.LENGTH_SHORT).show();
+					routeToDisplayAddresses = Wall.getRoutes().get(position).getNodeAddresses();
+					dialog.hide();
+					
+				
+					for(int i = 0; i<routeToDisplayAddresses.size(); i++)
+					{
+						int j = 0;
+						while(routeToDisplayAddresses.get(i).compareTo(nodes.get(j).getAddress())!=0)
+						{
+							nodes.get(j).turnOff();
+							j++;
+						}
+						nodes.get(j).turnOn();
+					}
+				}
+			});
+        	dialog.setTitle("Saved Routes");
+        	dialog.show();
+        break;
         }
+        
+      
         return false;
     }
 
@@ -214,99 +271,7 @@ public class ClimbActivity extends Activity {
     }
 
 	
-	/**
-	 * This method will add button to interface
-	 * @param address - string that will be associated with this button. You can get the string by calling getTag()
-	 * @param x - horizontal coordinate of where the user desires to place button
-	 * @param y - vertical coordinate of where the user desires to place button
-	 */
-	private void addToggleButton(String address, float x, float y) 
-	{
-		
-		if(!undoButton.isEnabled())undoButton.setEnabled(true);
-		
-		Node temp = tb; // take current button and place it in a temporary variable
-		tb = new Node(this);
-		tb.setBefore(temp);
-		tb.setTag(address); // set tag to be address
-		tb.setX(x-75); // set its X coordinate
-		tb.setY(y-200); // set its Y coordinate
-			
-		tb.setOnLongClickListener(new View.OnLongClickListener()
-		{ // When user taps on button for a long time
-		
-			@Override
-			public boolean onLongClick(View v)
-			{
-				ClipData.Item item = new ClipData.Item((CharSequence) tb.getTag());
-				ClipData dragData = new ClipData((CharSequence)tb.getTag(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
-				View.DragShadowBuilder myShadow = new View.DragShadowBuilder(tb); // create shadow as the user drags the button
-				v.startDrag(dragData, myShadow, null, 0); // will start drag of shadow created for the button
-				
-				return false;
-			}
-			
-		  });
-		  
-		  
-		 tb.setOnTouchListener(new View.OnTouchListener()
-		 {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent me) 
-			{
-				
-				if(me.getAction() == MotionEvent.ACTION_DOWN)
-				{
-					status = START_DRAGGING;
-				}
-				
-				if(me.getAction() == MotionEvent.ACTION_UP)
-				{
-					status = STOP_DRAGGING;
-				}
-		
-				else if(me.getAction() == MotionEvent.ACTION_MOVE)
-				{
-					if(status == START_DRAGGING)
-					{
-						AddButtonLayout((Node)v, RelativeLayout.ALIGN_PARENT_LEFT, (int)me.getX(), (int)me.getY(), 0, 0);
-						v.invalidate();
-					}
-				      
-				}
-				return false;
-			}  
-			
-		  });   
-		  //mainRelativeLayout.setOnDragListener(dragListen);
-
-		tb.setOnCheckedChangeListener(new OnCheckedChangeListener() { // add listener for when button is toggled
-
-		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
-		    {
-		    	sBuilder = new StringBuilder(); // create a new string builder
-				sBuilder.append((String) buttonView.getTag()); // append address associated with button
-				
-		        if(isChecked) // if button is toggled ON
-		        {
-					sBuilder.append(hexEquiv[count]); // append hex value of color currently selected
-		        }
-		        else // if button is toggled OFF
-		        {
-					sBuilder.append("000000");
-		        }
-		        
-		        Toast.makeText(main, sBuilder.toString(), 1).show(); // display string to be sent on screen
-				sendMessage(sBuilder.toString()); // send string via bluetooth
-		    }
-		    
-		});
-        mainRelativeLayout.addView(tb); // Finally, add this button to the view
-		
-	}
-    
-    
+	
     @Override
     public void onStart() {
         super.onStart();

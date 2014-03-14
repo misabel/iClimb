@@ -23,23 +23,27 @@
           android:icon="@android:drawable/ic_menu_mylocation"
           android:title="@string/discoverable"
           android:showAsAction="never" />
-    <item 
-        android:id="@+id/action_reset" 
-        android:title="@string/action_reset" 
-        android:orderInCategory="90" 
-        android:icon="@drawable/ic_action_reset"
-        android:showAsAction="always" />
+  
     <item 
         android:id="@+id/color_select" 
         android:title="@string/color_select" 
         android:icon="@drawable/ic_action_color_select" 
         android:showAsAction="ifRoom" 
         android:orderInCategory="80"></item>
-      <item 
-        android:id="@+id/undo" 
-        android:title="Undo" 
-        android:showAsAction="ifRoom" 
-        android:orderInCategory="80"></item>
+    
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_action_save"
+        android:showAsAction="always"
+        ></item>
+    
+     <item
+        android:id="@+id/action_load"
+        android:icon="@drawable/ic_action_load"
+        android:showAsAction="always"
+        ></item>
+    
+      
       
      
 </menu>

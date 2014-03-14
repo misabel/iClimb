@@ -47,6 +47,10 @@
             android:name="com.example.android.iClimb.ClimbActivity"
             android:label="@string/title_activity_setup" >
         </activity>
+        <activity
+            android:name="com.example.android.iClimb.ConfigurationActivity"
+            android:label="@string/title_activity_configuration" >
+        </activity>
     </application>
 
 </manifest>

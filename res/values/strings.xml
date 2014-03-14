@@ -54,5 +54,6 @@
     <string name="title_activity_setup">SetupActivity</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_configuration">ConfigurationActivity</string>
 
 </resources>

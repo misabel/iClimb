@@ -1,12 +1,14 @@
 package com.example.android.iClimb;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.example.android.BluetoothChat.R;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -18,12 +20,15 @@ import android.widget.RelativeLayout.LayoutParams;
 
 public class SetupActivity extends Activity {
 	SetupActivity main = this;
-	RelativeLayout setupRelativeLayout;
+	public static RelativeLayout setupRelativeLayout;
+	public static RelativeLayout getSetupRelativeLayout() {
+		return setupRelativeLayout;
+	}
 	RelativeLayout.LayoutParams relativeLayoutParameters;
 	Node tb = null;
 	MenuItem undoButton;
 	
-	static ArrayList<Node> nodes = new ArrayList<Node>();
+	public static ArrayList<Node> nodes = new ArrayList<Node>();
 	int status;
     public static final int STOP_DRAGGING = 0;
     public static final int START_DRAGGING = 1;
@@ -79,16 +84,15 @@ public class SetupActivity extends Activity {
 					tb = tb.getBefore();
 				}
 				
-				//Intent i=new Intent(SetupActivity.this, ConfigureActiviy.class);
-		        //startActivity(i);
+				Intent i=new Intent(SetupActivity.this, ClimbActivity.class);
+				startActivity(i);
+		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			break;
-				
-				
-				
 		}
 		
 		return false;
 	}
+	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
@@ -100,16 +104,19 @@ public class SetupActivity extends Activity {
 		return super.onTouchEvent(event);
 	}
 	
+	Random random = new Random();
+	int n; 
 	private void addToggleButton(float x, float y)
 	{
 		if(!undoButton.isEnabled()) undoButton.setEnabled(true);
 		
 		Node temp = tb;
-		tb = new Node(this);
-		tb.setBefore(temp);
+		tb = new Node(this, temp);
 		tb.setX(x-75);
 		tb.setY(y-200);
 		
+		n = random.nextInt(1000);
+		tb.setAddress(Integer.toString(n));
 		tb.setOnTouchListener(new View.OnTouchListener()
 		 {
 
@@ -141,6 +148,7 @@ public class SetupActivity extends Activity {
 			
 		  }); 
 		setupRelativeLayout.addView(tb);
+		Toast.makeText(this, tb.getAddress(), Toast.LENGTH_SHORT).show();
 		
 	}
 	
