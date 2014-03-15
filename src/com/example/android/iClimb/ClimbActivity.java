@@ -50,6 +50,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -120,7 +121,7 @@ public class ClimbActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	ArrayList<String> routeToDisplayAddresses;
-	 Dialog dialog;
+	
     @Override
     /**
      * When page is first loaded, this method is called
@@ -174,6 +175,10 @@ public class ClimbActivity extends Activity {
         return true;
     }
 
+    EditText routeNameField;
+    Route route;
+    Dialog routeNameDialog, routeListDialog;
+    
     @Override
     /*
      * This method is called when one of the options on the Action Bar is selected
@@ -201,23 +206,44 @@ public class ClimbActivity extends Activity {
 			break;
 			
         case R.id.action_save:
-        	Route route = new Route("random");
-        	for(int i = 0 ; i < nodes.size() ; i++)
-        	{
-        		String currNodeAddress = nodes.get(i).getAddress();
-        		route.addNode(currNodeAddress);
-    
-        	}
-        	Wall.saveRoute(route);
-        	Toast.makeText(this, "Path has been saved", Toast.LENGTH_SHORT).show();
+        	routeNameDialog = new Dialog(this);
+        	routeNameDialog.setContentView(R.layout.route_name_window);
+
+        	Button okButton = (Button)routeNameDialog.findViewById(R.id.ok_button);
+            routeNameField = (EditText)routeNameDialog.findViewById(R.id.route_name_tf);
+
+        	okButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					
+					route = new Route(routeNameField.getText().toString());
+
+		        	for(int i = 0 ; i < nodes.size() ; i++)
+		        	{
+		        		if(nodes.get(i).isChecked())
+			        	{
+			        		String currNodeAddress = nodes.get(i).getAddress();
+			        		route.addNode(currNodeAddress);
+		        		}
+		    
+		        	}
+		        	Wall.saveRoute(route);
+		        	Toast.makeText(main, "Path has been saved", Toast.LENGTH_SHORT).show();
+		        	routeNameDialog.hide();
+				}
+			});
+        	
+        	routeNameDialog.show();
+        	
         	break;
         	
         case R.id.action_load:
-        	 dialog = new Dialog(this);
+        	routeListDialog = new Dialog(this);
         	
-        	dialog.setContentView(R.layout.route_list);
-        	ArrayAdapter<String> routesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Wall.getRoutNames());
-        	ListView routeList = (ListView)dialog.findViewById(R.id.route_list);
+        	routeListDialog.setContentView(R.layout.route_list);
+        	ArrayAdapter<String> routesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Wall.getRouteNames());
+        	ListView routeList = (ListView)routeListDialog.findViewById(R.id.route_list);
         	routeList.setAdapter(routesAdapter);
         	
         	routeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -225,25 +251,29 @@ public class ClimbActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 				    int position, long arg3) {
-					Toast.makeText(main, "" + Wall.getRoutNames().get(position), Toast.LENGTH_SHORT).show();
+					Toast.makeText(main,Integer.toString(position), Toast.LENGTH_SHORT).show();
 					routeToDisplayAddresses = Wall.getRoutes().get(position).getNodeAddresses();
-					dialog.hide();
+					routeListDialog.hide();
 					
 				
-					for(int i = 0; i<routeToDisplayAddresses.size(); i++)
+					for(int i = 0; i<nodes.size(); i++)
 					{
-						int j = 0;
-						while(routeToDisplayAddresses.get(i).compareTo(nodes.get(j).getAddress())!=0)
+						for(int j = 0; j< routeToDisplayAddresses.size(); j++)
 						{
-							nodes.get(j).turnOff();
-							j++;
+							if( nodes.get(i).getAddress().compareTo(routeToDisplayAddresses.get(j))==0)
+							{
+								nodes.get(i).turnOn();
+								break;
+							}
+							
+							else nodes.get(i).turnOff();
 						}
-						nodes.get(j).turnOn();
+					
 					}
 				}
 			});
-        	dialog.setTitle("Saved Routes");
-        	dialog.show();
+        	routeListDialog.setTitle("Saved Routes");
+        	routeListDialog.show();
         break;
         }
         

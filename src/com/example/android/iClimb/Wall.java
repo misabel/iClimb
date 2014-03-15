@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Wall 
 {
+	
 	private static ArrayList<Route> routes = new ArrayList<Route>();
 	private static ArrayList<String> routeNames = new ArrayList<String>();
 	
@@ -24,7 +25,7 @@ public class Wall
 		return routes;
 	}
 	
-	public static ArrayList<String> getRoutNames()
+	public static ArrayList<String> getRouteNames()
 	{
 		return routeNames;
 	}

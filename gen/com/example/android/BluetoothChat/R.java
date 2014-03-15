@@ -42,23 +42,25 @@ public final class R {
         public static final int ic_launcher=0x7f02000e;
     }
     public static final class id {
-        public static final int action_configure=0x7f080010;
-        public static final int action_load=0x7f08000d;
-        public static final int action_reset=0x7f08000f;
-        public static final int action_save=0x7f08000c;
-        public static final int action_settings=0x7f080008;
+        public static final int action_configure=0x7f080012;
+        public static final int action_load=0x7f08000f;
+        public static final int action_reset=0x7f080011;
+        public static final int action_save=0x7f08000e;
+        public static final int action_settings=0x7f08000a;
         public static final int button_scan=0x7f080006;
-        public static final int color_select=0x7f08000b;
-        public static final int discoverable=0x7f08000a;
+        public static final int color_select=0x7f08000d;
+        public static final int discoverable=0x7f08000c;
         public static final int new_devices=0x7f080005;
+        public static final int ok_button=0x7f080009;
         public static final int paired_devices=0x7f080003;
         public static final int route_list=0x7f080007;
-        public static final int secure_connect_scan=0x7f080009;
+        public static final int route_name_tf=0x7f080008;
+        public static final int secure_connect_scan=0x7f08000b;
         public static final int title_left_text=0x7f080000;
         public static final int title_new_devices=0x7f080004;
         public static final int title_paired_devices=0x7f080002;
         public static final int title_right_text=0x7f080001;
-        public static final int undo=0x7f08000e;
+        public static final int undo=0x7f080010;
     }
     public static final class layout {
         public static final int activity_configuration=0x7f030000;
@@ -69,6 +71,7 @@ public final class R {
         public static final int device_name=0x7f030005;
         public static final int message=0x7f030006;
         public static final int route_list=0x7f030007;
+        public static final int route_name_window=0x7f030008;
     }
     public static final class menu {
         public static final int configuration=0x7f070000;
