@@ -36,6 +36,7 @@ public class SetupActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.setTitle("Setup");
 		setupRelativeLayout = new RelativeLayout(this);
 		relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		
@@ -147,6 +148,7 @@ public class SetupActivity extends Activity {
 			}  
 			
 		  }); 
+		tb.setBackgroundResource(R.drawable.gray_hold);
 		setupRelativeLayout.addView(tb);
 		Toast.makeText(this, tb.getAddress(), Toast.LENGTH_SHORT).show();
 		

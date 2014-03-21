@@ -71,11 +71,12 @@ public class ClimbActivity extends Activity {
     //private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
     
-    private int count = 0;
+    private int currColor = 0;
     private String[] diffColors = { "White", "Red", "Yellow", "Green", "Cyan", "Blue", "Violet" };
+    private int[] holdIcons = { R.drawable.white_hold, R.drawable.red_hold, R.drawable.yellow_hold, R.drawable.green_hold, R.drawable.cyan_hold, R.drawable.blue_hold, R.drawable.violet_hold};
 	private String[] hexEquiv = { "FFFFFF", "FF0000", "FFFF00", "00FF00", "00FFFFF", "0000FF", "FF00FF" };
     private MenuItem drawButton, undoButton;
-    private int[] arr = {R.drawable.ic_action_edit,        R.drawable.ic_action_edit_red, 
+    private int[] colorIcons = {R.drawable.ic_action_edit,        R.drawable.ic_action_edit_red, 
     					 R.drawable.ic_action_edit_yellow, R.drawable.ic_action_edit_green, 
     					 R.drawable.ic_action_edit_cyan,   R.drawable.ic_action_edit_blue,
     					 R.drawable.ic_action_edit_purple};
@@ -113,14 +114,15 @@ public class ClimbActivity extends Activity {
 	RelativeLayout.LayoutParams relativeLayoutParameters;
 	Node tb = null;
 	int status;
-	ClimbActivity main = this;
+	ClimbActivity cmain = this;
 	StringBuilder sBuilder;
 	//DragEventListener dragListen = new DragEventListener();
 	private static final String TAG = "z";
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
-	ArrayList<String> routeToDisplayAddresses;
+	ArrayList<Node> routeToDisplay;
+	private boolean isSaved;
 	
     @Override
     /**
@@ -128,7 +130,7 @@ public class ClimbActivity extends Activity {
      */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        isSaved = false;
         node = new Node(this, null);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
@@ -136,6 +138,7 @@ public class ClimbActivity extends Activity {
 
         mainRelativeLayout = new RelativeLayout(this);
         
+        this.setTitle("Climb");
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         
         setContentView(mainRelativeLayout, relativeLayoutParameters);
@@ -155,12 +158,35 @@ public class ClimbActivity extends Activity {
         {
         	Node reference = refNodes.get(i);
         	node = new Node(this, node.getBefore(), reference.getAddress(), reference.getX(), reference.getY());
+        	node.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+					
+						Node n = (Node)button;
+						if(isChecked)
+						{
+							n.setColor(hexEquiv[currColor]);
+							n.setIcon(holdIcons[currColor]);
+						}
+						
+						else
+						{
+							n.setColor("000000");
+							n.setIcon(R.drawable.gray_hold);
+						}
+					
+				
+				
+				}
+			});
         	mainRelativeLayout.addView(node);
         	nodes.add(node);
         	
         	
         }
     }
+    
     
     @Override
     /*
@@ -196,12 +222,12 @@ public class ClimbActivity extends Activity {
             ensureDiscoverable();
             return true;
         case R.id.color_select: // Button that goes through all the colors that user can select
-			count++;
-			if( count > 6 ) {
-				count = 0;
+			currColor++;
+			if( currColor > 6 ) {
+				currColor = 0;
 			} // end IF
-			drawButton.setIcon(arr[count]);
-			Toast.makeText(this, diffColors[count] + " selected!", Toast.LENGTH_SHORT).show();
+			drawButton.setIcon(colorIcons[currColor]);
+			Toast.makeText(this, diffColors[currColor] + " selected!", Toast.LENGTH_SHORT).show();
 			
 			break;
 			
@@ -223,19 +249,19 @@ public class ClimbActivity extends Activity {
 		        	{
 		        		if(nodes.get(i).isChecked())
 			        	{
-			        		String currNodeAddress = nodes.get(i).getAddress();
-			        		route.addNode(currNodeAddress);
+			        		Node currNode = nodes.get(i);
+			        		currNode.setIcon(nodes.get(i).getIcon());
+			        		route.addNode(currNode);
 		        		}
 		    
 		        	}
 		        	Wall.saveRoute(route);
-		        	Toast.makeText(main, "Path has been saved", Toast.LENGTH_SHORT).show();
+		        	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
 		        	routeNameDialog.hide();
 				}
 			});
         	
         	routeNameDialog.show();
-        	
         	break;
         	
         case R.id.action_load:
@@ -251,22 +277,30 @@ public class ClimbActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 				    int position, long arg3) {
-					Toast.makeText(main,Integer.toString(position), Toast.LENGTH_SHORT).show();
-					routeToDisplayAddresses = Wall.getRoutes().get(position).getNodeAddresses();
+					
+					Toast.makeText(cmain,Integer.toString(position), Toast.LENGTH_SHORT).show();
+					routeToDisplay = Wall.getRoutes().get(position).getNodes();
 					routeListDialog.hide();
 					
 				
 					for(int i = 0; i<nodes.size(); i++)
 					{
-						for(int j = 0; j< routeToDisplayAddresses.size(); j++)
+						for(int j = 0; j< routeToDisplay.size(); j++)
 						{
-							if( nodes.get(i).getAddress().compareTo(routeToDisplayAddresses.get(j))==0)
-							{
+							isSaved = true;
+							if( nodes.get(i).getAddress().compareTo(routeToDisplay.get(j).getAddress())==0)
+							{	
 								nodes.get(i).turnOn();
+								nodes.get(i).setIcon(routeToDisplay.get(j).getIcon());
+								
 								break;
 							}
 							
-							else nodes.get(i).turnOff();
+							else 
+							{
+								nodes.get(i).turnOff();
+							}
+							isSaved = false;
 						}
 					
 					}
@@ -277,7 +311,6 @@ public class ClimbActivity extends Activity {
         break;
         }
         
-      
         return false;
     }
 

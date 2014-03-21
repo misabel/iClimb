@@ -4,26 +4,26 @@ import java.util.ArrayList;
 
 public class Route
 {
-	private ArrayList<String> addresses;
+	private ArrayList<Node> nodes;
 	private String n;
 	Route(String name)
 	{
 		super();
 		n = name;
-		addresses = new ArrayList<String>();
+		nodes = new ArrayList<Node>();
 	}
 	
 	public String getName()
 	{
 		return n;
 	}
-	public ArrayList<String> getNodeAddresses()
+	public ArrayList<Node> getNodes()
 	{
-		return addresses;
+		return nodes;
 	}
-	public void addNode(String n)
+	public void addNode(Node n)
 	{
-		addresses.add(n);
+		nodes.add(n);
 	}
 	
 }
