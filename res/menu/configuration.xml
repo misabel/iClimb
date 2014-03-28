@@ -6,4 +6,18 @@
         android:showAsAction="never"
         android:title="@string/action_settings"/>
 
+	<item android:id="@+id/secure_connect_scan"
+          android:icon="@android:drawable/ic_menu_search"
+          android:title="@string/secure_connect"
+          android:showAsAction="never" />
+    
+    <item android:id="@+id/discoverable"
+          android:icon="@android:drawable/ic_menu_mylocation"
+          android:title="@string/discoverable"
+          android:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_action_save"
+        android:showAsAction="always"/>
 </menu>

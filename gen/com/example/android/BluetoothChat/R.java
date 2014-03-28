@@ -53,10 +53,10 @@ public final class R {
         public static final int action_configure=0x7f080012;
         public static final int action_load=0x7f08000f;
         public static final int action_reset=0x7f080011;
-        public static final int action_save=0x7f08000e;
+        public static final int action_save=0x7f08000d;
         public static final int action_settings=0x7f08000a;
         public static final int button_scan=0x7f080006;
-        public static final int color_select=0x7f08000d;
+        public static final int color_select=0x7f08000e;
         public static final int discoverable=0x7f08000c;
         public static final int new_devices=0x7f080005;
         public static final int ok_button=0x7f080009;
