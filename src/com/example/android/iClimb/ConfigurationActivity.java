@@ -145,7 +145,6 @@ public class ConfigurationActivity extends Activity {
 	 
 */
 	
-	
     @Override
     public void onStart() {
         super.onStart();
