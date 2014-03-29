@@ -88,6 +88,7 @@ public class SetupActivity extends Activity {
 				Intent i=new Intent(SetupActivity.this, ClimbActivity.class);
 				startActivity(i);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+		        finish();
 			break;
 		}
 		
