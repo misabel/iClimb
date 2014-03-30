@@ -42,6 +42,13 @@
         android:icon="@drawable/ic_action_load"
         android:showAsAction="always"
         ></item>
+     
+     <item 
+        android:id="@+id/turn_off" 
+        android:title="Turn all off" 
+        android:icon="@drawable/ic_turn_off" 
+        android:showAsAction="ifRoom" 
+        android:orderInCategory="80"></item>
     
       
       
