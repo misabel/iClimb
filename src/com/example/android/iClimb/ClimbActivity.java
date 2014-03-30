@@ -33,6 +33,8 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -124,7 +126,6 @@ public class ClimbActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	ArrayList<Node> routeToDisplay;
-	private boolean isSaved;
 	
     @Override
     /**
@@ -132,19 +133,22 @@ public class ClimbActivity extends Activity {
      */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isSaved = false;
+    	mainRelativeLayout = new RelativeLayout(this);
+		
         node = new Node(this, null);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-        mainRelativeLayout = new RelativeLayout(this);
         
         this.setTitle("Climb");
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         
         setContentView(mainRelativeLayout, relativeLayoutParameters);
-        
+        Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.background);
+		drawable.setAlpha(125);
+		mainRelativeLayout.setBackgroundDrawable(drawable);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         
@@ -274,7 +278,7 @@ public class ClimbActivity extends Activity {
         	{
 
             	AlertDialog.Builder warning =  new AlertDialog.Builder(this);
-            	warning.setTitle("No are routes currently saved.");
+            	warning.setTitle("No routes are currently saved.");
             	warning.setIcon(R.drawable.ic_no_routes);
             	warning.setPositiveButton("OK", null);
             	warning.show();

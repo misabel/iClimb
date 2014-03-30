@@ -8,6 +8,8 @@ import com.example.android.BluetoothChat.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +38,10 @@ public class SetupActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setTitle("Setup");
 		setupRelativeLayout = new RelativeLayout(this);
+		Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.background);
+		drawable.setAlpha(125);
+		setupRelativeLayout.setBackgroundDrawable(drawable);
 		relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		
 		setContentView(setupRelativeLayout, relativeLayoutParameters);
@@ -139,7 +145,7 @@ public class SetupActivity extends Activity {
 					if(status == START_DRAGGING)
 					{
 						x = me.getRawX()-v.getWidth()/2;
-						y = me.getRawY()-v.getHeight()*3/2-200;
+						y = me.getRawY()-v.getHeight()*3/2-125;
 						v.setX(x);
 						v.setY(y);
 					}

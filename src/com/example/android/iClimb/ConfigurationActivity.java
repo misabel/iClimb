@@ -29,6 +29,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 
 public class ConfigurationActivity extends Activity {
 	
@@ -80,6 +82,10 @@ public class ConfigurationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_configuration);
+		Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.background);
+		drawable.setAlpha(125);
+		mainRelativeLayout.setBackgroundDrawable(drawable);
         node = new Node(this, null);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 

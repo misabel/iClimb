@@ -6,9 +6,10 @@
 
     <EditText
         android:id="@+id/route_name_tf"
-        android:layout_width="250sp"
+        android:layout_width="500dp"
         android:layout_height="wrap_content"
-        android:ems="10" />
+        android:ems="10"
+        android:maxLength="30"/>
 
     <Button
         android:id="@+id/ok_button"
