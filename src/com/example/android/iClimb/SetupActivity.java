@@ -88,9 +88,10 @@ public class SetupActivity extends Activity {
 					nodes.add(tb);
 					tb = tb.getBefore();
 				}
+
 				
-				Wall.saveNodes(nodes);
 				Intent i=new Intent(SetupActivity.this, ConfigurationActivity.class);
+				Wall.saveNodes(nodes);
 				startActivity(i);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 		        finish();

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2009 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.android.iClimb;
 
 
@@ -13,7 +29,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,14 +46,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View.OnTouchListener;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -82,6 +113,8 @@ public class ConfigurationActivity extends Activity {
     
     RelativeLayout configRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
+	Node tb = null;
+	int status;
 	ConfigurationActivity cmain = this;
 	StringBuilder sBuilder;
 	//DragEventListener dragListen = new DragEventListener();
@@ -89,30 +122,30 @@ public class ConfigurationActivity extends Activity {
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
+	ArrayList<Node> routeToDisplay;
 	
     @Override
     /**
      * When page is first loaded, this method is called
      */
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_configuration);
-		Resources res = getResources();
-		Drawable drawable = res.getDrawable(R.drawable.background);
-		drawable.setAlpha(125);
-		configRelativeLayout.setBackgroundDrawable(drawable);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    	configRelativeLayout = new RelativeLayout(this);
+		
         node = new Node(this, null);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-        configRelativeLayout = new RelativeLayout(this);
         
         this.setTitle("Configuration");
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         
         setContentView(configRelativeLayout, relativeLayoutParameters);
-        
+        Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.background);
+		drawable.setAlpha(125);
+		configRelativeLayout.setBackgroundDrawable(drawable);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         
@@ -122,18 +155,19 @@ public class ConfigurationActivity extends Activity {
             finish();
             return;
         }
-       
         
-        //Grab All saved nodes and Place them on layout
         setnodes();
+       
     }
     
-    
-    /**
+	/**
+	 * 
+	 * /**
      * This Method will call all saved nodes and will add an ontouch listener to each node that will respond to each touch by saving
      * the current address to the touched node and sending a message to the hub requesting the next address be sent.
      * 
      * */
+    
     private void setnodes(){
         ArrayList<Node> refNodes = SetupActivity.nodes;
         for(int i = 0 ; i < refNodes.size() ; i++)
@@ -156,14 +190,6 @@ public class ConfigurationActivity extends Activity {
                     	if (readMessage!= null){
                     		if (node.getAddress() == null){
                     			node.setAddress(readMessage);
-        			        	/**
-        			        	 * 
-        			        	 * fix bluetooth message to be sent
-        			        	 * 
-        			        	 * 
-        			        	 * 
-        			        	 * 
-        			        	 * */
         			        	sendMessage("GIVE ME NEXT ADDRESS");
         			        	readMessage = null;
 
@@ -184,14 +210,7 @@ public class ConfigurationActivity extends Activity {
                     							//Yes Button Clicked
                         			        	node.setAddress(readMessage);
                         			        	readMessage = null;
-                        			        	/**
-                        			        	 * 
-                        			        	 * fix bluetooth message to be sent
-                        			        	 * 
-                        			        	 * 
-                        			        	 * 
-                        			        	 * 
-                        			        	 * */
+
                         			        	sendMessage("GIVE ME NEXT ADDRESS curr address is: " + node.getAddress());
                     						}
                     					  })
@@ -224,24 +243,16 @@ public class ConfigurationActivity extends Activity {
     }
     
     @Override
-    /*
-     * Called when Action Bar is created
-     */
+
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.configuration, menu);        
         return true;
     }
-
-    EditText routeNameField;
-    Route route;
-    Dialog routeNameDialog, routeListDialog;
     
     @Override
-    /*
-     * This method is called when one of the options on the Action Bar is selected
-     */
+
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent serverIntent = null;
         switch (item.getItemId()) {
@@ -264,7 +275,6 @@ public class ConfigurationActivity extends Activity {
         return false;
     }
 
-	
 	
     @Override
     public void onStart() {
@@ -366,21 +376,6 @@ public class ConfigurationActivity extends Activity {
         }
     }
 
-    // The action listener for the EditText widget, to listen for the return key
-    @SuppressWarnings("unused")
-	private TextView.OnEditorActionListener mWriteListener =
-        new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-            if(D) Log.i(TAG, "END onEditorAction");
-            return true;
-        }
-    };
-
     private final void setStatus(int resId) {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(resId);
@@ -418,13 +413,12 @@ public class ConfigurationActivity extends Activity {
                 byte[] writeBuf = (byte[]) msg.obj;
                 // construct a string from the buffer
                 String writeMessage = new String(writeBuf);
-                mConversationArrayAdapter.add("Me:  " + writeMessage);
                 break;
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 readMessage = new String(readBuf, 0, msg.arg1);
-                Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
                 mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
                 break;
             case MESSAGE_DEVICE_NAME:
@@ -473,6 +467,5 @@ public class ConfigurationActivity extends Activity {
         // Attempt to connect to the device
         mChatService.connect(device, secure);
     }
-
 
 }
