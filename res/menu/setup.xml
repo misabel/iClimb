@@ -1,16 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
-
      <item 
         android:id="@+id/undo" 
         android:title="Undo" 
         android:showAsAction="ifRoom" 
-        android:orderInCategory="80"></item>
+        android:icon="@drawable/ic_action_undo"
+        android:orderInCategory="80"/>
       
        <item 
         android:id="@+id/action_reset" 
@@ -20,7 +15,7 @@
         android:showAsAction="always" />
         <item 
         android:id="@+id/action_configure" 
-        android:title="Next" 
+        android:title="Configure" 
         android:orderInCategory="90" 
         android:icon="@drawable/ic_action_configure"
         android:showAsAction="always|withText" />

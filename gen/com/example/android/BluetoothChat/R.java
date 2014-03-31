@@ -26,50 +26,59 @@ public final class R {
     }
     public static final class drawable {
         public static final int app_icon=0x7f020000;
-        public static final int blue_hold=0x7f020001;
-        public static final int cyan_hold=0x7f020002;
-        public static final int gray_hold=0x7f020003;
-        public static final int green_hold=0x7f020004;
-        public static final int ic_action_color_select=0x7f020005;
-        public static final int ic_action_configure=0x7f020006;
-        public static final int ic_action_edit=0x7f020007;
-        public static final int ic_action_edit_blue=0x7f020008;
-        public static final int ic_action_edit_cyan=0x7f020009;
-        public static final int ic_action_edit_green=0x7f02000a;
-        public static final int ic_action_edit_purple=0x7f02000b;
-        public static final int ic_action_edit_red=0x7f02000c;
-        public static final int ic_action_edit_yellow=0x7f02000d;
-        public static final int ic_action_load=0x7f02000e;
-        public static final int ic_action_reset=0x7f02000f;
-        public static final int ic_action_save=0x7f020010;
-        public static final int ic_action_undo=0x7f020011;
-        public static final int ic_launcher=0x7f020012;
-        public static final int red_hold=0x7f020013;
-        public static final int violet_hold=0x7f020014;
-        public static final int white_hold=0x7f020015;
-        public static final int yellow_hold=0x7f020016;
+        public static final int background=0x7f020001;
+        public static final int blue_hold=0x7f020002;
+        public static final int cyan_hold=0x7f020003;
+        public static final int gray_hold=0x7f020004;
+        public static final int green_hold=0x7f020005;
+        public static final int ic_action_color_select=0x7f020006;
+        public static final int ic_action_configure=0x7f020007;
+        public static final int ic_action_edit=0x7f020008;
+        public static final int ic_action_edit_blue=0x7f020009;
+        public static final int ic_action_edit_cyan=0x7f02000a;
+        public static final int ic_action_edit_green=0x7f02000b;
+        public static final int ic_action_edit_purple=0x7f02000c;
+        public static final int ic_action_edit_red=0x7f02000d;
+        public static final int ic_action_edit_yellow=0x7f02000e;
+        public static final int ic_action_load=0x7f02000f;
+        public static final int ic_action_reset=0x7f020010;
+        public static final int ic_action_save=0x7f020011;
+        public static final int ic_action_undo=0x7f020012;
+        public static final int ic_delete_route=0x7f020013;
+        public static final int ic_launcher=0x7f020014;
+        public static final int ic_load_route=0x7f020015;
+        public static final int ic_no_routes=0x7f020016;
+        public static final int ic_turn_off=0x7f020017;
+        public static final int red_hold=0x7f020018;
+        public static final int violet_hold=0x7f020019;
+        public static final int white_hold=0x7f02001a;
+        public static final int yellow_hold=0x7f02001b;
     }
     public static final class id {
-        public static final int action_climb=0x7f08000d;
-        public static final int action_configure=0x7f080013;
-        public static final int action_load=0x7f080010;
-        public static final int action_reset=0x7f080012;
-        public static final int action_save=0x7f08000f;
-        public static final int action_settings=0x7f08000a;
+        public static final int action_climb=0x7f080010;
+        public static final int action_configure=0x7f080017;
+        public static final int action_load=0x7f080013;
+        public static final int action_reset=0x7f080016;
+        public static final int action_save=0x7f080012;
+        public static final int action_settings=0x7f08000d;
         public static final int button_scan=0x7f080006;
-        public static final int color_select=0x7f08000e;
-        public static final int discoverable=0x7f08000c;
+        public static final int color_select=0x7f080011;
+        public static final int delete_route=0x7f080009;
+        public static final int discoverable=0x7f08000f;
+        public static final int load_route=0x7f080008;
         public static final int new_devices=0x7f080005;
-        public static final int ok_button=0x7f080009;
+        public static final int ok_button=0x7f08000c;
         public static final int paired_devices=0x7f080003;
-        public static final int route_list=0x7f080007;
-        public static final int route_name_tf=0x7f080008;
-        public static final int secure_connect_scan=0x7f08000b;
+        public static final int route_list=0x7f08000a;
+        public static final int route_name=0x7f080007;
+        public static final int route_name_tf=0x7f08000b;
+        public static final int secure_connect_scan=0x7f08000e;
         public static final int title_left_text=0x7f080000;
         public static final int title_new_devices=0x7f080004;
         public static final int title_paired_devices=0x7f080002;
         public static final int title_right_text=0x7f080001;
-        public static final int undo=0x7f080011;
+        public static final int turn_off=0x7f080014;
+        public static final int undo=0x7f080015;
     }
     public static final class layout {
         public static final int activity_configuration=0x7f030000;
@@ -79,8 +88,9 @@ public final class R {
         public static final int device_list=0x7f030004;
         public static final int device_name=0x7f030005;
         public static final int message=0x7f030006;
-        public static final int route_list=0x7f030007;
-        public static final int route_name_window=0x7f030008;
+        public static final int route_item=0x7f030007;
+        public static final int route_list=0x7f030008;
+        public static final int route_name_window=0x7f030009;
     }
     public static final class menu {
         public static final int configuration=0x7f070000;

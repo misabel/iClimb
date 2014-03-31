@@ -25,10 +25,16 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -119,7 +125,6 @@ public class ClimbActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	ArrayList<Node> routeToDisplay;
-	private boolean isSaved;
 	
     @Override
     /**
@@ -127,19 +132,22 @@ public class ClimbActivity extends Activity {
      */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isSaved = false;
+    	mainRelativeLayout = new RelativeLayout(this);
+		
         node = new Node(this, null);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-        mainRelativeLayout = new RelativeLayout(this);
         
         this.setTitle("Climb");
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         
         setContentView(mainRelativeLayout, relativeLayoutParameters);
-        
+        Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.background);
+		drawable.setAlpha(125);
+		mainRelativeLayout.setBackgroundDrawable(drawable);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         
@@ -150,7 +158,7 @@ public class ClimbActivity extends Activity {
             return;
         }
        
-        ArrayList<Node> refNodes = SetupActivity.nodes;
+        ArrayList<Node> refNodes = Wall.getNodes();
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -182,6 +190,7 @@ public class ClimbActivity extends Activity {
         	
         	
         }
+        Wall.saveNodes(nodes);
     }
     
     
@@ -201,7 +210,8 @@ public class ClimbActivity extends Activity {
     EditText routeNameField;
     Route route;
     Dialog routeNameDialog, routeListDialog;
-    
+  
+    RouteListAdapter adapter;
     @Override
     /*
      * This method is called when one of the options on the Action Bar is selected
@@ -231,7 +241,7 @@ public class ClimbActivity extends Activity {
         case R.id.action_save:
         	routeNameDialog = new Dialog(this);
         	routeNameDialog.setContentView(R.layout.route_name_window);
-
+        	routeNameDialog.setTitle("Name Your Route");
         	Button okButton = (Button)routeNameDialog.findViewById(R.id.ok_button);
             routeNameField = (EditText)routeNameDialog.findViewById(R.id.route_name_tf);
 
@@ -262,55 +272,89 @@ public class ClimbActivity extends Activity {
         	break;
         	
         case R.id.action_load:
-        	routeListDialog = new Dialog(this);
         	
-        	routeListDialog.setContentView(R.layout.route_list);
-        	ArrayAdapter<String> routesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Wall.getRouteNames());
-        	ListView routeList = (ListView)routeListDialog.findViewById(R.id.route_list);
-        	routeList.setAdapter(routesAdapter);
-        	
-        	routeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        	if(Wall.getRoutes().size()==0)
+        	{
 
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-				    int position, long arg3) {
-					
-					Toast.makeText(cmain,Integer.toString(position), Toast.LENGTH_SHORT).show();
-					routeToDisplay = Wall.getRoutes().get(position).getNodes();
-					routeListDialog.hide();
-					
-				
-					for(int i = 0; i<nodes.size(); i++)
-					{
-						for(int j = 0; j< routeToDisplay.size(); j++)
-						{
-							isSaved = true;
-							if( nodes.get(i).getAddress().compareTo(routeToDisplay.get(j).getAddress())==0)
-							{	
-								nodes.get(i).turnOn();
-								nodes.get(i).setIcon(routeToDisplay.get(j).getIcon());
-								
-								break;
-							}
-							
-							else 
-							{
-								nodes.get(i).turnOff();
-							}
-							isSaved = false;
-						}
-					
-					}
-				}
-			});
-        	routeListDialog.setTitle("Saved Routes");
-        	routeListDialog.show();
+            	AlertDialog.Builder warning =  new AlertDialog.Builder(this);
+            	warning.setTitle("No routes are currently saved.");
+            	warning.setIcon(R.drawable.ic_no_routes);
+            	warning.setPositiveButton("OK", null);
+            	warning.show();
+        	}
+        	else
+	        {
+	        	routeListDialog = new Dialog(this);
+	        	
+	        	routeListDialog.setContentView(R.layout.route_list);
+	        	adapter = new RouteListAdapter(this, R.layout.route_item, Wall.getRoutes());
+	        	ListView routeList = (ListView)routeListDialog.findViewById(R.id.route_list);
+	        	routeList.setAdapter(adapter);
+	        	
+	        	routeListDialog.setTitle("Saved Routes");
+	        	routeListDialog.show();
+        	}
         break;
+        
+        case R.id.turn_off:
+        	for(int i = 0; i< nodes.size(); i++)
+        	{
+        		nodes.get(i).turnOff();
+        	}
+        	break;
         }
         
         return false;
     }
+    Route routeToRemove;
+    public void deleteRoute(View v)
+    {
+    	routeToRemove = (Route)v.getTag();
+    	
+    	AlertDialog.Builder warning =  new AlertDialog.Builder(this);
+    	warning.setTitle("Are you sure you wish to delete \"" + routeToRemove.getName() + "\"?");
+    	warning.setIcon(R.drawable.ic_delete_route);
+    	warning.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				adapter.remove(routeToRemove);
+				Wall.getNodes().remove(routeToRemove);
+			}
+		});
+    	warning.setNegativeButton("Cancel", null);
+    	warning.show();
+    	
+    	
+    }
+    
+    public void loadRoute(View v)
+    {
+    	Route routeToLoad = (Route)v.getTag();
+    	
 
+		for(int i = 0; i<nodes.size(); i++)
+		{
+			for(int j = 0; j< routeToLoad.getNodes().size(); j++)
+			{
+				
+				if( nodes.get(i).getAddress().compareTo(routeToLoad.getNodes().get(j).getAddress())==0)
+				{	
+					nodes.get(i).turnOn();
+					nodes.get(i).setIcon(routeToLoad.getNodes().get(j).getIcon());
+					
+					break;
+				}
+				
+				else 
+				{
+					nodes.get(i).turnOff();
+				}
+			}
+		
+		}
+		routeListDialog.hide();
+    }
     
     /**
      * This method will place button on the Relative Layout of the app

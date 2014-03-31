@@ -8,15 +8,15 @@ import com.example.android.BluetoothChat.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.widget.RelativeLayout.LayoutParams;
 
 public class SetupActivity extends Activity {
 	SetupActivity main = this;
@@ -38,6 +38,10 @@ public class SetupActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setTitle("Setup");
 		setupRelativeLayout = new RelativeLayout(this);
+		Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.background);
+		drawable.setAlpha(125);
+		setupRelativeLayout.setBackgroundDrawable(drawable);
 		relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		
 		setContentView(setupRelativeLayout, relativeLayoutParameters);
@@ -85,9 +89,11 @@ public class SetupActivity extends Activity {
 					tb = tb.getBefore();
 				}
 				
+				Wall.saveNodes(nodes);
 				Intent i=new Intent(SetupActivity.this, ConfigurationActivity.class);
 				startActivity(i);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+		        finish();
 			break;
 		}
 		
@@ -124,7 +130,7 @@ public class SetupActivity extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent me) 
 			{
-				
+				float x,y=0.0f;
 				if(me.getAction() == MotionEvent.ACTION_DOWN)
 				{
 					status = START_DRAGGING;
@@ -139,8 +145,10 @@ public class SetupActivity extends Activity {
 				{
 					if(status == START_DRAGGING)
 					{
-						AddButtonLayout((Node)v, RelativeLayout.ALIGN_PARENT_LEFT, (int)me.getX(), (int)me.getY(), 0, 0);
-						v.invalidate();
+						x = me.getRawX()-v.getWidth()/2;
+						y = me.getRawY()-v.getHeight()*3/2-125;
+						v.setX(x);
+						v.setY(y);
 					}
 				      
 				}
@@ -154,22 +162,5 @@ public class SetupActivity extends Activity {
 		
 	}
 	
-	 /**
-     * This method will place button on the Relative Layout of the app
-     * @param button - Button to be placed on the view
-     * @param centerInParent
-     * @param marginLeft
-     * @param marginTop
-     * @param marginRight
-     * @param marginBottom
-     */
-    public void AddButtonLayout(Button button, int centerInParent, int marginLeft, int marginTop, int marginRight, int marginBottom) 
-    {
-        RelativeLayout.LayoutParams buttonLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        buttonLayoutParameters.setMargins(marginLeft, marginTop, marginRight, marginBottom);
-        buttonLayoutParameters.addRule(centerInParent);
-        
-        button.setLayoutParams(buttonLayoutParameters);     
-    }
 
 }

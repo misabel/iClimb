@@ -34,6 +34,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 
 /**
  * This is the main Activity that displays the current chat session.
@@ -92,8 +94,13 @@ public class ConfigurationActivity extends Activity {
     /**
      * When page is first loaded, this method is called
      */
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_configuration);
+		Resources res = getResources();
+		Drawable drawable = res.getDrawable(R.drawable.background);
+		drawable.setAlpha(125);
+		configRelativeLayout.setBackgroundDrawable(drawable);
         node = new Node(this, null);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
