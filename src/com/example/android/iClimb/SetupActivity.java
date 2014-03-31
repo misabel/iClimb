@@ -85,7 +85,7 @@ public class SetupActivity extends Activity {
 					tb = tb.getBefore();
 				}
 				
-				Intent i=new Intent(SetupActivity.this, ClimbActivity.class);
+				Intent i=new Intent(SetupActivity.this, ConfigurationActivity.class);
 				startActivity(i);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			break;
