@@ -16,8 +16,11 @@
           android:title="@string/discoverable"
           android:showAsAction="never" />
     
-    <item
-        android:id="@+id/action_save"
-        android:icon="@drawable/ic_action_save"
-        android:showAsAction="always"/>
+        <item 
+        android:id="@+id/action_climb" 
+        android:title="Next" 
+        android:orderInCategory="90" 
+        android:icon="@drawable/ic_action_configure"
+        android:showAsAction="always|withText" />
+        
 </menu>
