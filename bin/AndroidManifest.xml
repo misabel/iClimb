@@ -32,7 +32,7 @@
         <activity
             android:name="com.example.android.iClimb.SetupActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/app_name" >
+            android:label="Setup" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

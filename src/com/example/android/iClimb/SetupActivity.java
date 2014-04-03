@@ -36,7 +36,6 @@ public class SetupActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setTitle("Setup");
 		setupRelativeLayout = new RelativeLayout(this);
 		Resources res = getResources();
 		Drawable drawable = res.getDrawable(R.drawable.background);
@@ -112,7 +111,7 @@ public class SetupActivity extends Activity {
 		return super.onTouchEvent(event);
 	}
 	
-	Random random = new Random();
+
 	int n; 
 	private void addToggleButton(float x, float y)
 	{
@@ -123,8 +122,7 @@ public class SetupActivity extends Activity {
 		tb.setX(x-75);
 		tb.setY(y-200);
 		
-		n = random.nextInt(1000);
-		tb.setAddress(Integer.toString(n));
+		tb.setAddress(null);
 		tb.setOnTouchListener(new View.OnTouchListener()
 		 {
 

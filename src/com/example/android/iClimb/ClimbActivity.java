@@ -29,8 +29,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -48,7 +46,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -239,36 +236,60 @@ public class ClimbActivity extends Activity {
 			break;
 			
         case R.id.action_save:
-        	routeNameDialog = new Dialog(this);
-        	routeNameDialog.setContentView(R.layout.route_name_window);
-        	routeNameDialog.setTitle("Name Your Route");
-        	Button okButton = (Button)routeNameDialog.findViewById(R.id.ok_button);
-            routeNameField = (EditText)routeNameDialog.findViewById(R.id.route_name_tf);
-
-        	okButton.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View arg0) {
-					
-					route = new Route(routeNameField.getText().toString());
-
-		        	for(int i = 0 ; i < nodes.size() ; i++)
-		        	{
-		        		if(nodes.get(i).isChecked())
-			        	{
-			        		Node currNode = nodes.get(i);
-			        		currNode.setIcon(nodes.get(i).getIcon());
-			        		route.addNode(currNode);
-		        		}
-		    
-		        	}
-		        	Wall.saveRoute(route);
-		        	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
-		        	routeNameDialog.hide();
-				}
-			});
+        	int count = 0;
+        	for(int i = 0 ; i < nodes.size() ; i++)
+        	{
+        		if(nodes.get(i).isChecked())
+	        	{
+	        		Node currNode = nodes.get(i);
+	        		currNode.setIcon(nodes.get(i).getIcon());
+	        		route.addNode(currNode);
+        		}
+        		else count++;
+        	}
         	
-        	routeNameDialog.show();
+        	if(count>0)
+        	{
+        		AlertDialog.Builder warning =  new AlertDialog.Builder(cmain);
+            	warning.setTitle("No holds are selected to be saved.");
+            	warning.setIcon(R.drawable.ic_no_routes);
+            	warning.setPositiveButton("OK", null);
+            	warning.show();
+        	}
+        	
+        	else
+	        {
+		        	routeNameDialog = new Dialog(this);
+		        	routeNameDialog.setContentView(R.layout.route_name_window);
+		        	routeNameDialog.setTitle("Name Your Route");
+		        	Button okButton = (Button)routeNameDialog.findViewById(R.id.ok_button);
+		            routeNameField = (EditText)routeNameDialog.findViewById(R.id.route_name_tf);
+		
+		        	okButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View arg0) {
+							
+							route = new Route(routeNameField.getText().toString());
+				        	for(int i = 0 ; i < nodes.size() ; i++)
+				        	{
+				        		if(nodes.get(i).isChecked())
+					        	{
+					        		Node currNode = nodes.get(i);
+					        		currNode.setIcon(nodes.get(i).getIcon());
+					        		route.addNode(currNode);
+				        		}
+				        	}
+				        
+					        	Wall.saveRoute(route);
+					        	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
+					        	routeNameDialog.hide();
+				        	
+						}
+					});
+		        	
+		        	routeNameDialog.show();
+        	}
         	break;
         	
         case R.id.action_load:
