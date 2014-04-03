@@ -190,7 +190,7 @@ public class ConfigurationActivity extends Activity {
                     	if (readMessage!= null){
                     		if (node.getAddress() == null){
                     			node.setAddress(readMessage);
-        			        	sendMessage("GIVE ME NEXT ADDRESS");
+        			        	sendMessage("Coordinates: " + node.getX() +" "+ node.getY());
         			        	readMessage = null;
 
                     		}

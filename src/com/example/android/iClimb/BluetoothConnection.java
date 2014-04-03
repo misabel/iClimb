@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
-
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -31,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 /**
@@ -449,23 +449,48 @@ public class BluetoothConnection {
 
         public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
-            byte[] buffer = new byte[1024];
-            int bytes;
+            //byte[] buffer = new byte[1024];
+            //int bytes;
 
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
 
-                    // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+                    byte[] buffer = new byte[1024];
+                    byte[] copy = new byte[1024];
+                    String readMessage;
+                    int bytes;
+                   if (mmInStream.available()>2) { 
+                       try {
+                          // Read from the InputStream
+                           bytes = mmInStream.read(buffer); 
+                           readMessage = new String(buffer, 0, bytes);
+                           System.arraycopy(buffer, 0, copy, 0, copy.length);
+
+                          }catch (IOException e) {
+                           Log.e(TAG, "disconnected", e);
+                           break;
+                       }
+                        // Send the obtained bytes to the UI Activity
+                        mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
+                        mHandler.obtainMessage(ConfigurationActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
+                        //mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
+                   }
+                   else {
+                 	  SystemClock.sleep(100);
+                   }
+                   
+                  /* bytes = mmInStream.read(buffer);
+                   readMessage = new String(buffer, 0, bytes);
+                   System.arraycopy(buffer, 0, copy, 0, copy.length);
+
+                   // Send the obtained bytes to the UI Activity
+                   mHandler.obtainMessage(BluetoothChat.MESSAGE_READ, bytes, -1, copy).sendToTarget();*/
+                   
+                   
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
-                    // Start the service over to restart listening mode
-                    BluetoothConnection.this.start();
                     break;
                 }
             }
