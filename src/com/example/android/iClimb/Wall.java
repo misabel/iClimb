@@ -8,6 +8,8 @@ public class Wall
 	private static ArrayList<Route> routes = new ArrayList<Route>();
 	private static ArrayList<String> routeNames = new ArrayList<String>();
 	private static ArrayList<Node> allNodes = new ArrayList<Node>();
+	public static int numNodes = 0;
+	public static int numPaths = 0;
 	
 	public static void saveRoute(Route p)
 	{
@@ -35,5 +37,17 @@ public class Wall
 	public static ArrayList<String> getRouteNames()
 	{
 		return routeNames;
+	}
+	public static void setNumNodes(int nNodes){
+		numNodes = nNodes;
+	}
+	public static int getNumNodes (){
+		return numNodes;
+	}
+	public static void setNumPaths(int nPaths){
+		numPaths = nPaths;
+	}
+	public static int getNumPaths(){
+		return numPaths;
 	}
 }

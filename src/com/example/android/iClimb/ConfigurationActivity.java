@@ -113,16 +113,11 @@ public class ConfigurationActivity extends Activity {
     
     RelativeLayout configRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
-	Node tb = null;
-	int status;
-	ConfigurationActivity cmain = this;
-	StringBuilder sBuilder;
-	//DragEventListener dragListen = new DragEventListener();
+
 	private static final String TAG = "z";
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
-	ArrayList<Node> routeToDisplay;
 	
     @Override
     /**
@@ -190,7 +185,9 @@ public class ConfigurationActivity extends Activity {
                     	if (readMessage!= null){
                     		if (node.getAddress() == null){
                     			node.setAddress(readMessage);
-        			        	sendMessage("Coordinates: " + node.getX() +" "+ node.getY());
+        			        	sendMessage("setxy");
+        			        	sendMessage(node.getX() +" "+ node.getY());
+        			        	sendMessage("next");
         			        	readMessage = null;
 
                     		}
@@ -265,6 +262,9 @@ public class ConfigurationActivity extends Activity {
 	            // Ensure this device is discoverable by others
 	            ensureDiscoverable();
 	            return true;
+	        case R.id.action_undo:
+	        	sendMessage("undo");
+			break;
 			case R.id.action_climb:
 				//Intent i=new Intent(context, ClimbActivity.class);
 				Intent switchView = new Intent(this, ClimbActivity.class);

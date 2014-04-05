@@ -474,19 +474,12 @@ public class BluetoothConnection {
                         // Send the obtained bytes to the UI Activity
                         mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
                         mHandler.obtainMessage(ConfigurationActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
+                        mHandler.obtainMessage(SplashScreen.MESSAGE_READ, bytes, -1, copy).sendToTarget();
                         //mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
                    }
                    else {
                  	  SystemClock.sleep(100);
                    }
-                   
-                  /* bytes = mmInStream.read(buffer);
-                   readMessage = new String(buffer, 0, bytes);
-                   System.arraycopy(buffer, 0, copy, 0, copy.length);
-
-                   // Send the obtained bytes to the UI Activity
-                   mHandler.obtainMessage(BluetoothChat.MESSAGE_READ, bytes, -1, copy).sendToTarget();*/
-                   
                    
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);

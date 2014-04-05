@@ -15,8 +15,13 @@
           android:icon="@android:drawable/ic_menu_mylocation"
           android:title="@string/discoverable"
           android:showAsAction="never" />
-    
-        <item 
+    <item 
+        android:id="@+id/action_undo" 
+        android:title="@string/action_reset" 
+        android:orderInCategory="90" 
+        android:icon="@drawable/ic_action_reset"
+        android:showAsAction="always" />
+    <item 
         android:id="@+id/action_climb" 
         android:title="Next" 
         android:orderInCategory="90" 
