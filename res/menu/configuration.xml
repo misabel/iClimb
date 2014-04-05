@@ -21,6 +21,10 @@
         android:orderInCategory="90" 
         android:icon="@drawable/ic_action_reset"
         android:showAsAction="always" />
+	<item 
+	    android:id="@+id/action_start_config"
+	    android:title="start_configuration"
+	    android:showAsAction="always|withText" />
     <item 
         android:id="@+id/action_climb" 
         android:title="Next" 

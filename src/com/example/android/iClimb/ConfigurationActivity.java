@@ -20,6 +20,7 @@ package com.example.android.iClimb;
 import java.util.ArrayList;
 
 import com.example.android.BluetoothChat.R;
+import com.example.android.BluetoothChat.R.menu;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -119,6 +120,10 @@ public class ConfigurationActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	
+	MenuItem configButton;
+	MenuItem undoButton;
+
+	
     @Override
     /**
      * When page is first loaded, this method is called
@@ -151,7 +156,7 @@ public class ConfigurationActivity extends Activity {
             return;
         }
         
-        setnodes();
+        //setnodes();
        
     }
     
@@ -244,7 +249,12 @@ public class ConfigurationActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.configuration, menu);        
+        inflater.inflate(R.menu.configuration, menu);
+		configButton = menu.findItem(R.id.action_start_config);
+		configButton.setEnabled(true);
+		
+		undoButton = menu.findItem(R.id.action_undo);
+		undoButton.setEnabled(false);
         return true;
     }
     
@@ -267,9 +277,16 @@ public class ConfigurationActivity extends Activity {
 			break;
 			case R.id.action_climb:
 				//Intent i=new Intent(context, ClimbActivity.class);
+				sendMessage("startClimb");
 				Intent switchView = new Intent(this, ClimbActivity.class);
 				startActivity(switchView);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+		        
+			break;
+			case R.id.action_start_config:
+				setnodes();
+				sendMessage("startConfig");
+				configButton.setEnabled(false);
 			break;
         }
         return false;

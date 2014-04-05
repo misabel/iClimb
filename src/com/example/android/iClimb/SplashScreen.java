@@ -440,7 +440,7 @@ public class SplashScreen extends Activity {
         		configured = false;
         	}
     		conversation_state = WALL_NAME;
-    		sendMessage("wall Name");
+    		sendMessage("wallName");
             break;
         case WALL_NAME:
         	wallName = readMessage;
