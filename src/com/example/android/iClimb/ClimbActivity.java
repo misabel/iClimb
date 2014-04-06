@@ -37,16 +37,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -72,7 +69,7 @@ public class ClimbActivity extends Activity {
     private int currColor = 0;
     private String[] diffColors = { "White", "Red", "Yellow", "Green", "Cyan", "Blue", "Violet" };
     private int[] holdIcons = { R.drawable.white_hold, R.drawable.red_hold, R.drawable.yellow_hold, R.drawable.green_hold, R.drawable.cyan_hold, R.drawable.blue_hold, R.drawable.violet_hold};
-	private String[] hexEquiv = { "FFFFFF", "FF0000", "FFFF00", "00FF00", "00FFFFF", "0000FF", "FF00FF" };
+	private String[] hexEquiv = { "FFFFFF", "FF0000", "FFFF00", "00FF00", "00FFFF", "0000FF", "FF00FF" };
     private MenuItem drawButton;
     private int[] colorIcons = {R.drawable.ic_action_edit,        R.drawable.ic_action_edit_red, 
     					 R.drawable.ic_action_edit_yellow, R.drawable.ic_action_edit_green, 
@@ -90,8 +87,6 @@ public class ClimbActivity extends Activity {
     
     //store incoming bluetooth message
     public String readMessage;
-    public String pathToSaveName;
-    public int routeNameCounter = 0;
 
 
     // Key names received from the BluetoothChatService Handler
@@ -154,11 +149,11 @@ public class ClimbActivity extends Activity {
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-            finish();
+            finish(); 
             return;
         }
        
-        ArrayList<Node> refNodes = Wall.getNodes();
+        ArrayList<Node> refNodes = (ArrayList<Node>)Wall.getNodes().values();
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -173,7 +168,6 @@ public class ClimbActivity extends Activity {
 						{
 							n.setColor(hexEquiv[currColor]);
 							n.setIcon(holdIcons[currColor]);
-							illuminateNode(n);
 						}
 						
 						else
@@ -271,23 +265,19 @@ public class ClimbActivity extends Activity {
 						@Override
 						public void onClick(View arg0) {
 							
-							route = new Route(routeNameField.getText().toString());
+							route = new Route(routeNameField.getText ().toString());
 				        	for(int i = 0 ; i < nodes.size() ; i++)
 				        	{
 				        		if(nodes.get(i).isChecked())
-					        	{
+					        	{ 
 					        		Node currNode = nodes.get(i);
 					        		currNode.setIcon(nodes.get(i).getIcon());
 					        		route.addNode(currNode);
 				        		}
 				        	}
 				        
-				        		Wall.saveRoute(route);
-					        	Toast.makeText(cmain, "Path has been saved to App", Toast.LENGTH_SHORT).show();
-					        	sendMessage("savePath");
-					        	SystemClock.sleep(200);
-					        	sendMessage("str: "+ route.getName());
-					        	pathToSaveName = route.getName();
+					        	Wall.saveRoute(route);
+					        	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
 					        	routeNameDialog.hide();
 				        	
 						}
@@ -346,7 +336,6 @@ public class ClimbActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				adapter.remove(routeToRemove);
 				Wall.getNodes().remove(routeToRemove);
-				deleteRouteFromHub(routeToRemove);
 			}
 		});
     	warning.setNegativeButton("Cancel", null);
@@ -370,7 +359,6 @@ public class ClimbActivity extends Activity {
 					nodes.get(i).turnOn();
 					nodes.get(i).setIcon(routeToLoad.getNodes().get(j).getIcon());
 					
-					
 					break;
 				}
 				
@@ -382,7 +370,6 @@ public class ClimbActivity extends Activity {
 		
 		}
 		routeListDialog.hide();
-		illuminatePath(routeToLoad);
     }
 	
 	
@@ -486,6 +473,8 @@ public class ClimbActivity extends Activity {
         }
     }
 
+ 
+
     private final void setStatus(int resId) {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(resId);
@@ -530,9 +519,6 @@ public class ClimbActivity extends Activity {
                 readMessage = new String(readBuf, 0, msg.arg1);
                 //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
                 mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-                if(readMessage.contains("savePath")){
-                	savePathtoHub();
-                }
                 break;
             case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
@@ -557,6 +543,12 @@ public class ClimbActivity extends Activity {
                 connectDevice(data, true);
             }
             break;
+       /* case REQUEST_CONNECT_DEVICE_INSECURE:
+            // When DeviceListActivity returns with a device to connect
+            if (resultCode == Activity.RESULT_OK) {
+                connectDevice(data, false);
+            }
+            break;*/
         case REQUEST_ENABLE_BT:
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
@@ -588,45 +580,6 @@ public class ClimbActivity extends Activity {
     public void clearMessage(){
     	readMessage = null;
     }
-    
-    private void illuminatePath(Route routeToIlluminate){
-		sendMessage("illPath");
-   	    SystemClock.sleep(200);
-   	    sendMessage("int: " + routeToIlluminate.getid());
-    }
-    private void illuminateNode(Node nodeToIlluminate){
-		sendMessage("illNode");
-   	    SystemClock.sleep(200);
-   	    sendMessage("int: " + nodeToIlluminate.getAddress());
-    }
-	//savePathtoHub
-    private void savePathtoHub(){
-    	if(readMessage.contains("yes")){
-    		ArrayList<String> refRoutes = Wall.getRouteNames();
-            for(int i = 0 ; i < refRoutes.size() ; i++){
-            	if (refRoutes.get(i).equals(pathToSaveName)){
-            		Route routeToSave = Wall.getRoutes().get(i);
-                	String[] parts = readMessage.split(" ");
-            		routeToSave.setID(parts[parts.length-1]);
-            	}
-            }
-
-    	}
-    	else if (readMessage.contains("no")){
-            Toast.makeText(this, "Unable to save path to Hub", Toast.LENGTH_SHORT).show();
-    	}
-    	
-    	pathToSaveName = null;
-    }
-    
-    //delete Path from hub memory
-    private void deleteRouteFromHub(Route routeToDelete){
-		sendMessage("deletePath");
-   	    SystemClock.sleep(200);
-   	    sendMessage("int: " + routeToDelete.getid());
-    }
-    
-
 
 
 }

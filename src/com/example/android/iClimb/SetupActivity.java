@@ -1,30 +1,36 @@
 package com.example.android.iClimb;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.example.android.BluetoothChat.R;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-public class SetupActivity extends Activity {
+public class SetupActivity extends Activity
+{
 	SetupActivity main = this;
 	public static RelativeLayout setupRelativeLayout;
-	public static RelativeLayout getSetupRelativeLayout() {
+	
+	public static RelativeLayout getSetupRelativeLayout()
+	{
 		return setupRelativeLayout;
 	}
+	
 	RelativeLayout.LayoutParams relativeLayoutParameters;
 	Node tb = null;
 	MenuItem undoButton;
@@ -36,8 +42,11 @@ public class SetupActivity extends Activity {
     public static final int STOP_DRAGGING = 0;
     public static final int START_DRAGGING = 1;
     
+    Dialog wallNameDialog;
+    EditText wallNameField;
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		numNodes = 0;
 		setupRelativeLayout = new RelativeLayout(this);
@@ -48,10 +57,32 @@ public class SetupActivity extends Activity {
 		relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		
 		setContentView(setupRelativeLayout, relativeLayoutParameters);
+		
+		wallNameDialog = new Dialog(this);
+    	wallNameDialog.setContentView(R.layout.route_name_window);
+    	wallNameDialog.setTitle("Name Your Route");
+    	Button okButton = (Button)wallNameDialog.findViewById(R.id.ok_button);
+        wallNameField = (EditText)wallNameDialog.findViewById(R.id.route_name_tf);
+
+    	okButton.setOnClickListener(new OnClickListener() 
+    	{
+			
+			@Override
+			public void onClick(View arg0) 
+			{
+				
+				Wall.setWallName(wallNameField.getText().toString());
+		        wallNameDialog.hide();
+	        	
+			}
+		});
+    	
+    	wallNameDialog.show();
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.setup, menu);
 		undoButton = menu.findItem(R.id.undo);
@@ -99,6 +130,7 @@ public class SetupActivity extends Activity {
 				startActivity(i);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 		        finish();
+		        
 			break;
 		}
 		
@@ -125,7 +157,7 @@ public class SetupActivity extends Activity {
             	warning.show();
 			}
 		
-		}
+		}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 		return super.onTouchEvent(event);
 	}
 	
@@ -147,6 +179,7 @@ public class SetupActivity extends Activity {
 			public boolean onTouch(View v, MotionEvent me) 
 			{
 				float x,y=0.0f;
+				
 				if(me.getAction() == MotionEvent.ACTION_DOWN)
 				{
 					status = START_DRAGGING;
@@ -177,6 +210,4 @@ public class SetupActivity extends Activity {
 		Toast.makeText(this, tb.getAddress(), Toast.LENGTH_SHORT).show();
 		
 	}
-	
-
 }

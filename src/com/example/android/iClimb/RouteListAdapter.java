@@ -18,7 +18,8 @@ public class RouteListAdapter extends ArrayAdapter<Route>
 		private List<Route> routes;
 		private int layoutResourceId;
 		private Context context;
-		public RouteListAdapter(Context context, int layoutResourceId, List<Route> routes)
+		
+		RouteListAdapter(Context context, int layoutResourceId, List<Route> routes)
 		{
 			super(context, layoutResourceId, routes);
 			this.layoutResourceId = layoutResourceId;

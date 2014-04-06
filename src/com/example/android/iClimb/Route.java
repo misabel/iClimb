@@ -6,7 +6,7 @@ public class Route
 {
 	private ArrayList<Node> nodes;
 	private String n;
-	private String id;
+	
 	Route(String name)
 	{
 		super();
@@ -18,20 +18,15 @@ public class Route
 	{
 		return n;
 	}
+	
 	public ArrayList<Node> getNodes()
 	{
 		return nodes;
 	}
+	
 	public void addNode(Node n)
 	{
 		nodes.add(n);
-	}
-	public void setID(String routeid){
-		id = routeid;
-	}
-	public String getid()
-	{
-		return id;
 	}
 	
 }

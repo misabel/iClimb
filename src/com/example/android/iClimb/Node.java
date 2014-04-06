@@ -52,6 +52,7 @@ public class Node extends ToggleButton {
 		icon = i;
 		this.setBackgroundResource(icon);
 	}
+	
 	public void setColor(String c)
 	{
 		color = c;
@@ -88,6 +89,7 @@ public class Node extends ToggleButton {
 	{
 		return address;
 	}
+	
 	public Node getBefore()
 	{
 		return nodeBefore;

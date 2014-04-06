@@ -122,7 +122,6 @@ public class ConfigurationActivity extends Activity {
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-
         
         this.setTitle("Configuration");
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -151,35 +150,42 @@ public class ConfigurationActivity extends Activity {
      * the current address to the touched node and sending a message to the hub requesting the next address be sent.
      * */
     
-    private void setnodes(){
-        ArrayList<Node> refNodes = SetupActivity.nodes;
+    private void setnodes()
+    {
+        ArrayList<Node> refNodes = (ArrayList<Node>) Wall.getNodes().values();
+        
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
         	node = new Node(this, node.getBefore(), reference.getAddress(), reference.getX(), reference.getY());
         	
-        	node.setOnTouchListener(new OnTouchListener() {
+        	node.setOnTouchListener(new OnTouchListener() 
+        	{
 
-                public boolean onTouch(View v, MotionEvent event) {
+                public boolean onTouch(View v, MotionEvent event)
+                {
                     int action = event.getAction();
 
                     //if node selected
-                    if (action == MotionEvent.ACTION_DOWN ) {
+                    if (action == MotionEvent.ACTION_DOWN ) 
+                    {
                     	//if button pushed do nothing, wait for release
                     }
                     
                     //else if node is released
-                    else if (action == MotionEvent.ACTION_UP ) {
+                    else if (action == MotionEvent.ACTION_UP )
+                    {
                     	if (readMessage!= null){
-                    		if (node.getAddress() == null){
+                    		if (node.getAddress() == null)
+                    		{
                     			node.setAddress(readMessage);
         			        	sendMessage("setxy");
         			        	sendMessage(node.getX() +" "+ node.getY());
         			        	sendMessage("next");
         			        	readMessage = null;
-
                     		}
-                    		else{
+                    		else
+                    		{
                     			//Double check!!!!!!!!!!!!!!!!!!!!!!!
                     			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ConfigurationActivity.this);
                     	 
@@ -243,7 +249,8 @@ public class ConfigurationActivity extends Activity {
     
     @Override
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) 
+    {
         Intent serverIntent = null;
         switch (item.getItemId()) {
 	        case R.id.secure_connect_scan:
@@ -276,39 +283,46 @@ public class ConfigurationActivity extends Activity {
 
 	
     @Override
-    public void onStart() {
+    public void onStart() 
+    {
         super.onStart();
         if(D) Log.e(TAG, "++ ON START ++");
 
         // If BT is not on, request that it be enabled.
         // setupChat() will then be called during onActivityResult
-        if (!mBluetoothAdapter.isEnabled()) {
+        if (!mBluetoothAdapter.isEnabled()) 
+        {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         // Otherwise, setup the chat session
-        } else {
+        } else 
+        {
             if (mChatService == null) setupChat();
         }
     }
 
     @Override
-    public synchronized void onResume() {
+    public synchronized void onResume() 
+    {
         super.onResume();
         if(D) Log.e(TAG, "+ ON RESUME +");
 
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
+        if (mChatService != null) 
+        {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothConnection.STATE_NONE) {
+            if (mChatService.getState() == BluetoothConnection.STATE_NONE)
+            {
               // Start the Bluetooth chat services
               mChatService.start();
             }
         }
     }
 
-    private void setupChat() {
+    private void setupChat()
+    {
         Log.d(TAG, "setupChat()");
 
         // Initialize the array adapter for the conversation thread
@@ -323,7 +337,8 @@ public class ConfigurationActivity extends Activity {
 
 
     @Override
-    public void onDestroy() {
+    public void onDestroy() 
+    {
         super.onDestroy();
         // Stop the Bluetooth chat services
         if (mChatService != null) mChatService.stop();
@@ -331,10 +346,11 @@ public class ConfigurationActivity extends Activity {
     }
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-	private void ensureDiscoverable() {
+	private void ensureDiscoverable() 
+    {
         if(D) Log.d(TAG, "ensure discoverable");
-        if (mBluetoothAdapter.getScanMode() !=
-            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+        if (mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) 
+        {
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
             startActivity(discoverableIntent);
@@ -345,15 +361,18 @@ public class ConfigurationActivity extends Activity {
      * Sends a message.
      * @param message  A string of text to send.
      */
-    public void sendMessage(String message) {
+    public void sendMessage(String message) 
+    {
         // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothConnection.STATE_CONNECTED) {
+        if (mChatService.getState() != BluetoothConnection.STATE_CONNECTED)
+        {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Check that there's actually something to send
-        if (message.length() > 0) {
+        if (message.length() > 0) 
+        {
             // Get the message bytes and tell the BluetoothChatService to write
             byte[] send = message.getBytes();
             mChatService.write(send);
@@ -364,45 +383,56 @@ public class ConfigurationActivity extends Activity {
         }
     }
 
-    private final void setStatus(int resId) {
+    private final void setStatus(int resId) 
+    {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(resId);
     }
 
-    private final void setStatus(CharSequence subTitle) {
+    private final void setStatus(CharSequence subTitle)
+    {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(subTitle);
     }
 
     // The Handler that gets information back from the BluetoothChatService
-    private final Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-            case MESSAGE_STATE_CHANGE:
-                if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-                switch (msg.arg1) {
-                case BluetoothConnection.STATE_CONNECTED:
-                    setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                    mConversationArrayAdapter.clear();
-                    break;
-                case BluetoothConnection.STATE_CONNECTING:
-                    setStatus(R.string.title_connecting);
-                    break;
-                case BluetoothConnection.STATE_LISTEN:
-                    setStatus(R.string.title_not_connected);
-                    break;
-                case BluetoothConnection.STATE_NONE:
-                    //setStatus(R.string.title_not_connected);
-                    break;
-                }
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
+            	case MESSAGE_STATE_CHANGE:
+	                if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+	                switch (msg.arg1)
+	                {
+		                case BluetoothConnection.STATE_CONNECTED:
+		                    setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+		                    mConversationArrayAdapter.clear();
+		                    break;
+		                    
+		                case BluetoothConnection.STATE_CONNECTING:
+		                    setStatus(R.string.title_connecting);
+		                    break;
+		                    
+		                case BluetoothConnection.STATE_LISTEN:
+		                    setStatus(R.string.title_not_connected);
+		                    break;
+		                    
+		                case BluetoothConnection.STATE_NONE:
+		                    //setStatus(R.string.title_not_connected);
+		                    break;
+	                }
                 break;
+                
             case MESSAGE_WRITE:
                 byte[] writeBuf = (byte[]) msg.obj;
                 // construct a string from the buffer
                 @SuppressWarnings("unused")
 				String writeMessage = new String(writeBuf);
                 break;
+                
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
@@ -410,12 +440,14 @@ public class ConfigurationActivity extends Activity {
                 //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
                 mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
                 break;
+                
             case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
                 mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
                 Toast.makeText(getApplicationContext(), "Connected to "
                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                 break;
+                
             case MESSAGE_TOAST:
                 Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
                                Toast.LENGTH_SHORT).show();
@@ -424,30 +456,38 @@ public class ConfigurationActivity extends Activity {
         }
     };
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) 
+    {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
-        switch (requestCode) {
-        case REQUEST_CONNECT_DEVICE_SECURE:
-            // When DeviceListActivity returns with a device to connect
-            if (resultCode == Activity.RESULT_OK) {
-                connectDevice(data, true);
-            }
-            break;
-        case REQUEST_ENABLE_BT:
-            // When the request to enable Bluetooth returns
-            if (resultCode == Activity.RESULT_OK) {
-                // Bluetooth is now enabled, so set up a chat session
-                setupChat();
-            } else {
-                // User did not enable Bluetooth or an error occurred
-                Log.d(TAG, "BT not enabled");
-                Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
-                finish();
-            }
+        switch (requestCode)
+        {
+	        case REQUEST_CONNECT_DEVICE_SECURE:
+	            // When DeviceListActivity returns with a device to connect
+	            if (resultCode == Activity.RESULT_OK) 
+	            {
+	                connectDevice(data, true);
+	            }
+	            break;
+	        case REQUEST_ENABLE_BT:
+	            // When the request to enable Bluetooth returns
+	            if (resultCode == Activity.RESULT_OK)
+	            {
+	                // Bluetooth is now enabled, so set up a chat session
+	                setupChat();
+	            } 
+	            
+	            else 
+	            {
+	                // User did not enable Bluetooth or an error occurred
+	                Log.d(TAG, "BT not enabled");
+	                Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+	                finish();
+	            }
         }
     }
 
-    private void connectDevice(Intent data, boolean secure) {
+    private void connectDevice(Intent data, boolean secure)
+    {
         // Get the device MAC address
         String address = data.getExtras()
             .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);

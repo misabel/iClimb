@@ -25,17 +25,10 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,34 +36,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View.OnTouchListener;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 
 /**
  * This is the main Activity that displays the current chat session.
@@ -207,7 +180,13 @@ public class SplashScreen extends Activity {
         loadingIcon.setVisibility(View.VISIBLE);
         loadingAnim.start();
         }
-    	
+    	 
+		@Override
+		protected void onPostExecute(String result)
+		{
+	        loadingIcon.setVisibility(View.GONE);
+	        loadingAnim.stop();
+		}
     }
     @Override
 
@@ -346,11 +325,6 @@ public class SplashScreen extends Activity {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(subTitle);
         
-        /*if (subTitle.equals(R.string.title_not_connected)){
-        	Intent serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-        }*/
-        
         if (subTitle.equals(getString(R.string.title_connected_to, mConnectedDeviceName))){
         	sendMessage("hello");
         	conversation_state = HELLO;
@@ -376,10 +350,8 @@ public class SplashScreen extends Activity {
                     break;
                 case BluetoothConnection.STATE_LISTEN:
                     setStatus(R.string.title_not_connected);
-                   // Toast.makeText(getApplicationContext(), "just got done not connecting!",  Toast.LENGTH_SHORT).show();
                     break;
                 case BluetoothConnection.STATE_NONE:
-                    //setStatus(R.string.title_not_connected);
                     break;
                 }
                 break;
@@ -393,7 +365,6 @@ public class SplashScreen extends Activity {
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 readMessage = new String(readBuf, 0, msg.arg1);
-               // Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Received: " + readMessage);
            	    SystemClock.sleep(200);            
                 bluetoothConversation(conversation_state);
