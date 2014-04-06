@@ -72,7 +72,7 @@ public class ClimbActivity extends Activity {
     private String[] diffColors = { "White", "Red", "Yellow", "Green", "Cyan", "Blue", "Violet" };
     private int[] holdIcons = { R.drawable.white_hold, R.drawable.red_hold, R.drawable.yellow_hold, R.drawable.green_hold, R.drawable.cyan_hold, R.drawable.blue_hold, R.drawable.violet_hold};
 	private String[] hexEquiv = { "FFFFFF", "FF0000", "FFFF00", "00FF00", "00FFFFF", "0000FF", "FF00FF" };
-    private MenuItem drawButton, undoButton;
+    private MenuItem drawButton;
     private int[] colorIcons = {R.drawable.ic_action_edit,        R.drawable.ic_action_edit_red, 
     					 R.drawable.ic_action_edit_yellow, R.drawable.ic_action_edit_green, 
     					 R.drawable.ic_action_edit_cyan,   R.drawable.ic_action_edit_blue,
@@ -177,9 +177,6 @@ public class ClimbActivity extends Activity {
 							n.setColor("000000");
 							n.setIcon(R.drawable.gray_hold);
 						}
-					
-				
-				
 				}
 			});
         	mainRelativeLayout.addView(node);
@@ -376,25 +373,6 @@ public class ClimbActivity extends Activity {
 		}
 		routeListDialog.hide();
     }
-    
-    /**
-     * This method will place button on the Relative Layout of the app
-     * @param button - Button to be placed on the view
-     * @param centerInParent
-     * @param marginLeft
-     * @param marginTop
-     * @param marginRight
-     * @param marginBottom
-     */
-    public void AddButtonLayout(Button button, int centerInParent, int marginLeft, int marginTop, int marginRight, int marginBottom) 
-    {
-        RelativeLayout.LayoutParams buttonLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        buttonLayoutParameters.setMargins(marginLeft, marginTop, marginRight, marginBottom);
-        buttonLayoutParameters.addRule(centerInParent);
-        
-        button.setLayoutParams(buttonLayoutParameters);     
-    }
-
 	
 	
     @Override
@@ -497,20 +475,7 @@ public class ClimbActivity extends Activity {
         }
     }
 
-    // The action listener for the EditText widget, to listen for the return key
-    @SuppressWarnings("unused")
-	private TextView.OnEditorActionListener mWriteListener =
-        new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-            if(D) Log.i(TAG, "END onEditorAction");
-            return true;
-        }
-    };
+ 
 
     private final void setStatus(int resId) {
         final ActionBar actionBar = getActionBar();

@@ -112,7 +112,6 @@ public class SetupActivity extends Activity {
 	}
 	
 
-	int n; 
 	private void addToggleButton(float x, float y)
 	{
 		if(!undoButton.isEnabled()) undoButton.setEnabled(true);
@@ -155,7 +154,7 @@ public class SetupActivity extends Activity {
 			}  
 			
 		  }); 
-		tb.setBackgroundResource(R.drawable.gray_hold);
+		tb.setIcon(R.drawable.gray_hold);
 		setupRelativeLayout.addView(tb);
 		Toast.makeText(this, tb.getAddress(), Toast.LENGTH_SHORT).show();
 		
