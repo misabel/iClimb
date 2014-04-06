@@ -34,7 +34,9 @@ import android.content.ClipDescription;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,6 +59,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -136,7 +139,7 @@ public class SplashScreen extends Activity {
     // Member object for the chat services
     private BluetoothConnection mChatService = null;
     
-    RelativeLayout configRelativeLayout;
+    RelativeLayout splashRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
 	Node tb = null;
 	int status;
@@ -149,19 +152,26 @@ public class SplashScreen extends Activity {
 	private Node node;
 	ArrayList<Node> routeToDisplay;
 	
+	ImageView loadingIcon;
+	AnimationDrawable loadingAnim;
     @Override
     /**
      * When page is first loaded, this method is called
      */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    	configRelativeLayout = new RelativeLayout(this);
-    	
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         
+    	
         // Set up the window layout
         setContentView(R.layout.activity_splash);
-        
+        splashRelativeLayout = new RelativeLayout(this);
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        loadingIcon = (ImageView) findViewById(R.id.loading_hold);
+        loadingIcon.setVisibility(View.GONE);
+        //loadingIcon.setVisibility(View.GONE);
+        loadingIcon.setBackgroundResource(R.anim.hold_loading);
+        loadingAnim = (AnimationDrawable) loadingIcon.getBackground();
+        loadingIcon.post(new Starter());
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
@@ -176,7 +186,29 @@ public class SplashScreen extends Activity {
        
     }
     
+    class Starter implements Runnable
+    {
+    	public void run()
+    	{
+    		new Operation().execute("");
+    	}
+    }
     
+    private class Operation extends AsyncTask<String, Void, String>
+    {
+
+		@Override
+		protected String doInBackground(String... arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+        protected void onPreExecute() {
+        loadingIcon.setVisibility(View.VISIBLE);
+        loadingAnim.start();
+        }
+    	
+    }
     @Override
 
     public boolean onCreateOptionsMenu(Menu menu)
@@ -439,11 +471,20 @@ public class SplashScreen extends Activity {
         		readMessage = null;
         	}
     		conversation_state = WALL_NAME;
+<<<<<<< HEAD
        	    SystemClock.sleep(50);    		
+=======
+<<<<<<< HEAD
+    		sendMessage("wallName");
+            break;
+=======
+       	    //SystemClock.sleep(50);    		
+>>>>>>> e4ce7fe0afcd3e985381cd327a090c7316c997d1
        	    sendMessage("wallName");
             Log.d(TAG, "sent wallName");
        	    ////SystemClock.sleep(100);            
        	    break;
+>>>>>>> 56eef88dc2d2f80841ed8c83ef2f89375782d2bd
         case WALL_NAME:
         	String[] name = readMessage.split(":");
         	//numNodes = Integer.parseInt(parts[parts.length-1]);

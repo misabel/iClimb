@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:drawable="@drawable/one" 
+        android:duration="250" 
+        android:height = "10sp"/>
+	<item android:drawable="@drawable/two" android:duration="250" />
+	<item android:drawable="@drawable/three" android:duration="250" />
+	<item android:drawable="@drawable/four" android:duration="250" />
+	<item android:drawable="@drawable/five" android:duration="250" />
+	<item android:drawable="@drawable/six" android:duration="250" />
+	<item android:drawable="@drawable/seven" android:duration="250" />
+	
+	<item android:drawable="@drawable/eight" android:duration="250" />
+	<item android:drawable="@drawable/one" android:duration="250" />
+	<item android:drawable="@drawable/eight" android:duration="250" />
+	<item android:drawable="@drawable/one" android:duration="250" />
+	<item android:drawable="@drawable/eight" android:duration="250" />
+	<item android:drawable="@drawable/one" android:duration="250" />
+
+</animation-list>
