@@ -439,7 +439,7 @@ public class SplashScreen extends Activity {
         		readMessage = null;
         	}
     		conversation_state = WALL_NAME;
-       	    //SystemClock.sleep(50);    		
+       	    SystemClock.sleep(50);    		
        	    sendMessage("wallName");
             Log.d(TAG, "sent wallName");
        	    ////SystemClock.sleep(100);            
