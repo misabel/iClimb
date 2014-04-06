@@ -486,11 +486,6 @@ public class ClimbActivity extends Activity {
         }
     }
 
-<<<<<<< HEAD
-=======
- 
-
->>>>>>> e4ce7fe0afcd3e985381cd327a090c7316c997d1
     private final void setStatus(int resId) {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(resId);

@@ -471,20 +471,11 @@ public class SplashScreen extends Activity {
         		readMessage = null;
         	}
     		conversation_state = WALL_NAME;
-<<<<<<< HEAD
        	    SystemClock.sleep(50);    		
-=======
-<<<<<<< HEAD
-    		sendMessage("wallName");
-            break;
-=======
-       	    //SystemClock.sleep(50);    		
->>>>>>> e4ce7fe0afcd3e985381cd327a090c7316c997d1
        	    sendMessage("wallName");
             Log.d(TAG, "sent wallName");
        	    ////SystemClock.sleep(100);            
        	    break;
->>>>>>> 56eef88dc2d2f80841ed8c83ef2f89375782d2bd
         case WALL_NAME:
         	String[] name = readMessage.split(":");
         	//numNodes = Integer.parseInt(parts[parts.length-1]);
