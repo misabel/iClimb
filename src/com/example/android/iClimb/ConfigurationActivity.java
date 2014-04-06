@@ -20,6 +20,7 @@ package com.example.android.iClimb;
 import java.util.ArrayList;
 
 import com.example.android.BluetoothChat.R;
+import com.example.android.BluetoothChat.R.menu;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -119,6 +120,10 @@ public class ConfigurationActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	
+	MenuItem configButton;
+	MenuItem undoButton;
+
+	
     @Override
     /**
      * When page is first loaded, this method is called
@@ -149,18 +154,15 @@ public class ConfigurationActivity extends Activity {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             finish();
             return;
-        }
+        }        
         
-        setnodes();
+        //setnodes();
        
     }
     
 	/**
-	 * 
-	 * /**
      * This Method will call all saved nodes and will add an ontouch listener to each node that will respond to each touch by saving
      * the current address to the touched node and sending a message to the hub requesting the next address be sent.
-     * 
      * */
     
     private void setnodes(){
@@ -244,7 +246,12 @@ public class ConfigurationActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.configuration, menu);        
+        inflater.inflate(R.menu.configuration, menu);
+		configButton = menu.findItem(R.id.action_start_config);
+		configButton.setEnabled(true);
+		
+		undoButton = menu.findItem(R.id.action_undo);
+		undoButton.setEnabled(false);
         return true;
     }
     
@@ -267,9 +274,15 @@ public class ConfigurationActivity extends Activity {
 			break;
 			case R.id.action_climb:
 				//Intent i=new Intent(context, ClimbActivity.class);
+				sendMessage("startClimb");
 				Intent switchView = new Intent(this, ClimbActivity.class);
 				startActivity(switchView);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+			break;
+			case R.id.action_start_config:
+				setnodes();
+				sendMessage("startConfig");
+				configButton.setEnabled(false);
 			break;
         }
         return false;
@@ -322,17 +335,6 @@ public class ConfigurationActivity extends Activity {
         mOutStringBuffer = new StringBuffer("");
     }
 
-    @Override
-    public synchronized void onPause() {
-        super.onPause();
-        if(D) Log.e(TAG, "- ON PAUSE -");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if(D) Log.e(TAG, "-- ON STOP --");
-    }
 
     @Override
     public void onDestroy() {

@@ -73,7 +73,6 @@ public class SetupActivity extends Activity {
 			break;
 			
 			case R.id.action_reset:
-		
 				Toast.makeText(this, "Reset Selected", Toast.LENGTH_SHORT).show();
 				setupRelativeLayout.removeAllViews();
 				tb = null;

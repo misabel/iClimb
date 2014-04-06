@@ -472,10 +472,9 @@ public class BluetoothConnection {
                            break;
                        }
                         // Send the obtained bytes to the UI Activity
-                        mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
-                        mHandler.obtainMessage(ConfigurationActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
-                        mHandler.obtainMessage(SplashScreen.MESSAGE_READ, bytes, -1, copy).sendToTarget();
                         //mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
+                        //mHandler.obtainMessage(ConfigurationActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
+                        mHandler.obtainMessage(SplashScreen.MESSAGE_READ, bytes, -1, copy).sendToTarget();
                    }
                    else {
                  	  SystemClock.sleep(100);

@@ -41,6 +41,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -180,8 +181,7 @@ public class SplashScreen extends Activity {
         
         Intent serverIntent = new Intent(this, DeviceListActivity.class);
         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);   
-        
-        Toast.makeText(getApplicationContext(), "just got done on creating!",  Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "just got done on creating!",  Toast.LENGTH_SHORT).show();
 
        
     }
@@ -214,7 +214,7 @@ public class SplashScreen extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.configuration, menu);        
+        inflater.inflate(R.menu.splash, menu);        
         return true;
     }
     
@@ -232,12 +232,6 @@ public class SplashScreen extends Activity {
 	            // Ensure this device is discoverable by others
 	            ensureDiscoverable();
 	            return true;
-			case R.id.action_climb:
-				//Intent i=new Intent(context, ClimbActivity.class);
-				Intent switchView = new Intent(this, ClimbActivity.class);
-				startActivity(switchView);
-		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-			break;
         }
         return false;
     }
@@ -355,14 +349,13 @@ public class SplashScreen extends Activity {
         /*if (subTitle.equals(R.string.title_not_connected)){
         	Intent serverIntent = new Intent(this, DeviceListActivity.class);
             startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-            Toast.makeText(getApplicationContext(), "trying here yo",  Toast.LENGTH_SHORT).show();
-
         }*/
         
         if (subTitle.equals(getString(R.string.title_connected_to, mConnectedDeviceName))){
         	sendMessage("hello");
-        	conversation_state = 1;
-            Toast.makeText(getApplicationContext(), "Sent Hello :D",  Toast.LENGTH_SHORT).show();
+        	conversation_state = HELLO;
+            Log.d(TAG, "sent hello");
+            //Toast.makeText(getApplicationContext(), "Sent Hello :D",  Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -383,7 +376,7 @@ public class SplashScreen extends Activity {
                     break;
                 case BluetoothConnection.STATE_LISTEN:
                     setStatus(R.string.title_not_connected);
-                    Toast.makeText(getApplicationContext(), "just got done not connecting!",  Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(), "just got done not connecting!",  Toast.LENGTH_SHORT).show();
                     break;
                 case BluetoothConnection.STATE_NONE:
                     //setStatus(R.string.title_not_connected);
@@ -394,12 +387,15 @@ public class SplashScreen extends Activity {
                 byte[] writeBuf = (byte[]) msg.obj;
                 // construct a string from the buffer
                 String writeMessage = new String(writeBuf);
+                Log.d(TAG, "Writing: " + writeMessage);
                 break;
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 readMessage = new String(readBuf, 0, msg.arg1);
-                Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Received: " + readMessage);
+           	    SystemClock.sleep(200);            
                 bluetoothConversation(conversation_state);
                 break;
             case MESSAGE_DEVICE_NAME:
@@ -461,25 +457,42 @@ public class SplashScreen extends Activity {
         	readMessage = null;
         	conversation_state = CONFIG;
         	sendMessage("config?");
+            Log.d(TAG, "sent config?");
             break;
         case CONFIG:
         	if(readMessage.contains("yes")){
-            	readMessage = null;
+                Log.d(TAG, "Wall configured");
             	configured = true;
+            	readMessage = null;
         	}
         	else if (readMessage.contains("no")){
-        		readMessage = null;
+                Log.d(TAG, "Wall not configured");
         		configured = false;
+        		readMessage = null;
         	}
     		conversation_state = WALL_NAME;
+<<<<<<< HEAD
     		sendMessage("wallName");
             break;
+=======
+       	    //SystemClock.sleep(50);    		
+       	    sendMessage("wallName");
+            Log.d(TAG, "sent wallName");
+       	    ////SystemClock.sleep(100);            
+       	    break;
+>>>>>>> 56eef88dc2d2f80841ed8c83ef2f89375782d2bd
         case WALL_NAME:
-        	wallName = readMessage;
+        	String[] name = readMessage.split(":");
+        	//numNodes = Integer.parseInt(parts[parts.length-1]);
+        	wallName = name[name.length-1];
+            Log.d(TAG, "WALL NAME SET TO:" + wallName);
         	readMessage = null;
         	conversation_state = NUM_NODES;
-        	sendMessage("#nodes");
-            break;
+       	    //SystemClock.sleep(50);        	
+       	    sendMessage("#nodes");
+            Log.d(TAG, "sent #nodes");
+       	    ////SystemClock.sleep(100);            
+       	    break;
         case NUM_NODES:
         	if (configured){
             	if(nodesCalled){
@@ -494,7 +507,9 @@ public class SplashScreen extends Activity {
                 		nodes.add(temp);
                 		nodeCount++;
                 		readMessage = null;
+                   	    ////SystemClock.sleep(100);                		
                 		sendMessage("next");
+                        Log.d(TAG, "sent next");
                 	}
             		Node tn = null;
             		Node temp = tn;
@@ -507,19 +522,28 @@ public class SplashScreen extends Activity {
             		readMessage = null;
                 	conversation_state = START_CLIMB;
                 	Wall.saveNodes(nodes);
+               	    ////SystemClock.sleep(100);                	
                 	sendMessage ("#paths");
+                    Log.d(TAG, "sent #paths");
             	}
             	else{
-                	numNodes = Integer.parseInt(readMessage);
-                	readMessage = null;
+                	String[] nodes = readMessage.split("\n");
+                	numNodes = Integer.parseInt(nodes[nodes.length-1]);
+                	//wallName = nodes[nodes.length-1];
+               	    ////SystemClock.sleep(100);                	
                 	sendMessage("next");
+                    Log.d(TAG, "sent next");
                 	nodesCalled = true;
             	}
         	}//end if configured
         	//if not configured switch to setup view
         	else if(!configured){
-            	numNodes = Integer.parseInt(readMessage);
-            	Wall.setNumNodes(numNodes);
+            	String[] parts = readMessage.split("\n");
+            	numNodes = Integer.parseInt(parts[parts.length-1]);
+                Log.d(TAG, "set numNodes to: " + numNodes);
+                if(numNodes >= 0){
+                	Wall.setNumNodes(numNodes);
+                }
             	readMessage = null;
 				Intent switchToSetupView = new Intent(this, SetupActivity.class);
 				startActivity(switchToSetupView);
@@ -527,27 +551,38 @@ public class SplashScreen extends Activity {
         	}
 
         case NUM_PATHS:
-        	
+        	if(!configured){
+        		break;
+        	}
         	if(pathsCalled){
         		if (pathCount < numPaths -1){
 					Route route = new Route(readMessage);
 					Wall.saveRoute(route);
             		pathCount++;
             		readMessage = null;
+               	    ////SystemClock.sleep(100);            		
             		sendMessage("next");
+                    Log.d(TAG, "sent next");
+
             	}
         		Route route = new Route(readMessage);
         		Wall.saveRoute(route);
         		pathCount++;
         		readMessage = null;
             	conversation_state = START_CLIMB;
-            	sendMessage ("start climb");
+           	    ////SystemClock.sleep(100);            	
+            	sendMessage ("startClimb");
+                Log.d(TAG, "sent startclimb");
         	}
         	else{
-            	numPaths = Integer.parseInt(readMessage);
+            	String[] paths = readMessage.split("\n");
+            	numPaths = Integer.parseInt(paths[paths.length-1]);
+                Log.d(TAG, "set numPaths to: " + numPaths);
             	Wall.setNumPaths(numPaths);
             	readMessage = null;
+           	    ////SystemClock.sleep(100);            	
             	sendMessage("next");
+                Log.d(TAG, "sent next");
             	pathsCalled = true;
         	}
             break;
@@ -557,6 +592,10 @@ public class SplashScreen extends Activity {
 			startActivity(switchToClimbView);
 	        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
             break;
+        default:
+        
+        break;
+            
         }
     	
     }
