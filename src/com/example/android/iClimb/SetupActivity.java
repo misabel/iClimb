@@ -7,6 +7,7 @@ import com.example.android.BluetoothChat.R;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -27,6 +28,8 @@ public class SetupActivity extends Activity {
 	RelativeLayout.LayoutParams relativeLayoutParameters;
 	Node tb = null;
 	MenuItem undoButton;
+	int MAX_NODES = 10;
+	int numNodes; 
 	
 	public static ArrayList<Node> nodes = new ArrayList<Node>();
 	int status;
@@ -36,6 +39,7 @@ public class SetupActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		numNodes = 0;
 		setupRelativeLayout = new RelativeLayout(this);
 		Resources res = getResources();
 		Drawable drawable = res.getDrawable(R.drawable.background);
@@ -67,6 +71,7 @@ public class SetupActivity extends Activity {
 					Node toRemove = tb;
 					tb = toRemove.getBefore();
 					setupRelativeLayout.removeView(toRemove);
+					numNodes--;
 					if(tb==null) undoButton.setEnabled(false);
 				}
 				
@@ -76,6 +81,7 @@ public class SetupActivity extends Activity {
 				Toast.makeText(this, "Reset Selected", Toast.LENGTH_SHORT).show();
 				setupRelativeLayout.removeAllViews();
 				tb = null;
+				numNodes = 0;
 				undoButton.setEnabled(false);
 			break;
 			
@@ -105,7 +111,20 @@ public class SetupActivity extends Activity {
 	{
 		if(event.getAction() == MotionEvent.ACTION_DOWN)
 		{
-			addToggleButton(event.getX(), event.getY());
+			if(numNodes < 10)
+			{
+				addToggleButton(event.getX(), event.getY());
+				numNodes++;
+			}
+			else 
+			{
+				AlertDialog.Builder warning =  new AlertDialog.Builder(main);
+            	warning.setTitle("The maximum amount of holds have been reached.");
+            	warning.setIcon(R.drawable.ic_no_routes);
+            	warning.setPositiveButton("OK", null);
+            	warning.show();
+			}
+		
 		}
 		return super.onTouchEvent(event);
 	}

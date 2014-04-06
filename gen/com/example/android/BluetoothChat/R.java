@@ -110,7 +110,6 @@ public final class R {
         public static final int configuration=0x7f070000;
         public static final int option_menu=0x7f070001;
         public static final int setup=0x7f070002;
-        public static final int splash=0x7f070003;
     }
     public static final class string {
         public static final int action_reset=0x7f060011;

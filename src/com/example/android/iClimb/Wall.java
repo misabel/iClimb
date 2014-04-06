@@ -8,9 +8,19 @@ public class Wall
 	private static ArrayList<Route> routes = new ArrayList<Route>();
 	private static ArrayList<String> routeNames = new ArrayList<String>();
 	private static ArrayList<Node> allNodes = new ArrayList<Node>();
+	private static String name;
 	public static int numNodes = 0;
 	public static int numPaths = 0;
 	
+	public String getName()
+	{
+		return name;
+	}
+	
+	public void setWallName(String n)
+	{
+		name = n;
+	}
 	public static void saveRoute(Route p)
 	{
 		routes.add(p);
