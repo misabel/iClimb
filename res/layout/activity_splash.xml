@@ -3,7 +3,9 @@
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+     android:background="@drawable/background"
+  >
 
     <ImageView
         android:id="@+id/loading_hold"
@@ -11,6 +13,6 @@
         android:layout_height="50sp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" 
-        android:background="@drawable/background"/>
+       />
 
 </RelativeLayout>
