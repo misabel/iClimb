@@ -20,18 +20,14 @@ package com.example.android.iClimb;
 import java.util.ArrayList;
 
 import com.example.android.BluetoothChat.R;
-import com.example.android.BluetoothChat.R.menu;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -41,33 +37,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnTouchListener;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+
 
 /**
  * This is the main Activity that displays the current chat session.
@@ -88,9 +68,13 @@ public class ConfigurationActivity extends Activity {
     public static final int MESSAGE_TOAST = 5;
     public static final int STOP_DRAGGING = 0;
     public static final int START_DRAGGING = 1;
+    public static final int NUM_NODES = Wall.getNumNodes();
     
     //store incoming bluetooth message
     public String readMessage;
+    
+    //counter of configured nodes
+    public int nodesConfigured = 0;
 
 
     // Key names received from the BluetoothChatService Handler
@@ -120,11 +104,13 @@ public class ConfigurationActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	
+	//menu buttons
 	MenuItem configButton;
 	MenuItem undoButton;
 
 	
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     /**
      * When page is first loaded, this method is called
      */
@@ -414,7 +400,8 @@ public class ConfigurationActivity extends Activity {
             case MESSAGE_WRITE:
                 byte[] writeBuf = (byte[]) msg.obj;
                 // construct a string from the buffer
-                String writeMessage = new String(writeBuf);
+                @SuppressWarnings("unused")
+				String writeMessage = new String(writeBuf);
                 break;
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
