@@ -150,7 +150,7 @@ public class ClimbActivity extends Activity {
         setContentView(mainRelativeLayout, relativeLayoutParameters);
         Resources res = getResources();
 		Drawable drawable = res.getDrawable(R.drawable.background);
-		drawable.setAlpha(125);
+		//drawable.setAlpha(125);
 		mainRelativeLayout.setBackgroundDrawable(drawable);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

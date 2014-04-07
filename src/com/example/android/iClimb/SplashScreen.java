@@ -131,7 +131,6 @@ public class SplashScreen extends Activity {
 	int status;
 	SplashScreen cmain = this;
 	StringBuilder sBuilder;
-	//DragEventListener dragListen = new DragEventListener();
 	private static final String TAG = "z";
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
@@ -151,12 +150,13 @@ public class SplashScreen extends Activity {
         setContentView(R.layout.activity_splash);
         splashRelativeLayout = new RelativeLayout(this);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        
         loadingIcon = (ImageView) findViewById(R.id.loading_hold);
         loadingIcon.setVisibility(View.GONE);
-        //loadingIcon.setVisibility(View.GONE);
         loadingIcon.setBackgroundResource(R.anim.hold_loading);
         loadingAnim = (AnimationDrawable) loadingIcon.getBackground();
         loadingIcon.post(new Starter());
+        
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
@@ -164,9 +164,9 @@ public class SplashScreen extends Activity {
             return;
         }
         
+        
         Intent serverIntent = new Intent(this, DeviceListActivity.class);
-        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);   
-        //Toast.makeText(getApplicationContext(), "just got done on creating!",  Toast.LENGTH_SHORT).show();
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);  
 
        
     }
@@ -192,16 +192,9 @@ public class SplashScreen extends Activity {
         loadingIcon.setVisibility(View.VISIBLE);
         loadingAnim.start();
         }
-    	 
-		/*@Override
-		protected void onPostExecute(String result)
-		{
-	        loadingIcon.setVisibility(View.GONE);
-	        loadingAnim.stop();
-		}*/
     }
+    
     @Override
-
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
@@ -210,18 +203,14 @@ public class SplashScreen extends Activity {
     }
     
     @Override
-
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent serverIntent = null;
-        switch (item.getItemId()) {
+        switch (item.getItemId())
+        {
 	        case R.id.secure_connect_scan:
 	            // Launch the DeviceListActivity to see devices and do scan
 	            serverIntent = new Intent(this, DeviceListActivity.class);
 	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-	            return true;
-	        case R.id.discoverable:
-	            // Ensure this device is discoverable by others
-	            ensureDiscoverable();
 	            return true;
         }
         return false;
@@ -395,12 +384,14 @@ public class SplashScreen extends Activity {
         }
     };
 
-    public void attemptConnection(){
+    public void attemptConnection()
+    {
         Intent serverIntent = new Intent(getApplicationContext(), DeviceListActivity.class);
         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE); 
     }
     
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
         switch (requestCode) {
         case REQUEST_CONNECT_DEVICE_SECURE:
@@ -434,34 +425,45 @@ public class SplashScreen extends Activity {
     }
     
     
-    private void bluetoothMessgeHandler (String btMessage){
+    private void bluetoothMessgeHandler (String btMessage)
+    {
     	messageToSend = null;
-    	if (btMessage.contains(M_HELLO)){
+    	if (btMessage.contains(M_HELLO))
+    	{
     		readMessage = null;
         	conversation_state = CONFIG;
         	//sendMessage("config?");
         	messageToSend = "config?";
             Log.d(TAG, "sent config?");
     	}
-    	if (btMessage.contains(M_CONFIG) ){
-    		if(readMessage.contains("yes")){
+    	
+    	if (btMessage.contains(M_CONFIG) )
+    	{
+    		if(readMessage.contains("yes"))
+    		{
                 Log.d(TAG, "Wall configured");
             	configured = true;
             	readMessage = null;
             	messageToSend = "wallName";
         	}
-        	else if (readMessage.contains("no")){
+    		
+        	else if (readMessage.contains("no"))
+        	{
                 Log.d(TAG, "Wall not configured");
         		configured = false;
         		readMessage = null;
         		messageToSend = "wallName";
         	}
-        	else{
+    		
+        	else
+        	{
         		messageToSend = "config?";
         	}
     		conversation_state = WALL_NAME;
     	}
-    	if (btMessage.contains(M_WALL_NAME)){
+    	
+    	if (btMessage.contains(M_WALL_NAME))
+    	{
     		String[] name = readMessage.split(":");
         	wallName = name[name.length-1];
             Log.d(TAG, "WALL NAME SET TO:" + wallName);
@@ -470,19 +472,23 @@ public class SplashScreen extends Activity {
        	    SystemClock.sleep(100);        	
        	    messageToSend = "#nodes";
     	}
-    	if (btMessage.contains(M_NUM_NODES)){
+    	if (btMessage.contains(M_NUM_NODES))
+    	{
         	String[] nodes = readMessage.split("\\r?\\n");
         	numNodes = Integer.parseInt(nodes[nodes.length-1]);
             Log.d(TAG, "num nodes set to: " + numNodes);
         	Wall.setNumNodes(numNodes);
         	//if the wall is configured initiallize the NEXTNODE conversation to receive nodes
-        	if(configured){
-        		if (numNodes > 0){
+        	if(configured)
+        	{
+        		if (numNodes > 0)
+        		{
                 	messageToSend = "nextNode";
                 	nodeCount = 0;
                 	conversation_state = NEXT_NODE;
         		}
-        		else{
+        		else
+        		{
         			messageToSend = "#routes";
         			conversation_state = NUM_ROUTES;
         		}
@@ -490,7 +496,8 @@ public class SplashScreen extends Activity {
             	
         	}
         	//if the wall is not configured, switch views to setup view
-        	else{
+        	else
+        	{
         		readMessage = null;
         		// mChatService.stop();
 				Intent switchToSetupView = new Intent(this, SetupActivity.class);
@@ -502,7 +509,8 @@ public class SplashScreen extends Activity {
         	}
 
     	}
-    	if (btMessage.contains(M_NEXT_NODE)){
+    	if (btMessage.contains(M_NEXT_NODE))
+    	{
         	String[] parts = readMessage.split("\n");
         	String[] nodeParts = parts[1].split(" ");
     		Node tn = null;
@@ -514,38 +522,48 @@ public class SplashScreen extends Activity {
             Log.d(TAG, "Node set to: " + temp.getAddress()+" , " + temp.getX() +" , " + temp.getY());
     		nodes.add(temp);
     		readMessage = null;    		
-    		if (nodeCount < numNodes-1){
+    		if (nodeCount < numNodes-1)
+    		{
         		conversation_state = NEXT_NODE;
     			messageToSend = "nextNode";
     		}
-    		else if (nodeCount == numNodes-1){
+    		else if (nodeCount == numNodes-1)
+    		{
     			conversation_state = NUM_ROUTES;
     			messageToSend = "#routes";
     		}
     		nodeCount++;
     		
     	}
-    	if (btMessage.contains(M_NUM_ROUTES)){
+    	
+    	if (btMessage.contains(M_NUM_ROUTES))
+    	{
     		String[] routes = readMessage.split("\n");
         	numRoutes = Integer.parseInt(routes[routes.length-1]);
             Log.d(TAG, "num routes set to: " + numRoutes);
         	Wall.setNumRoutes(numRoutes); 
-    		if (numRoutes > 0){
+    		if (numRoutes > 0)
+    		{
             	messageToSend = "nextRoute";
             	routeCount = 0;
             	conversation_state = NEXT_ROUTE;
     		}
-    		else{
+    		else
+    		{
     			messageToSend = "startClimb";
     			conversation_state = START_CLIMB;
     		}
     	}
-    	if (btMessage.contains(M_NEXT_ROUTE)){
+    	
+    	if (btMessage.contains(M_NEXT_ROUTE))
+    	{
         	String[] routeParts = readMessage.split("\n");
         	Route route = new Route(routeParts[2]);
         	route.setID(routeParts[1]);
         	String[] routeNodes = routeParts[3].split(" ");
-        	for(int i=0; i<routeNodes.length; i++){
+        	
+        	for(int i=0; i<routeNodes.length; i++)
+        	{
         		Node tn = null;
         		Node temp = tn;
         		temp = new Node (this, tn);
@@ -553,19 +571,25 @@ public class SplashScreen extends Activity {
         		route.addNode(temp);
                 Log.d(TAG, "added Node" + temp.getAddress()+" to route " + route.getid() +"  named  " + route.getName());
         	}
+        	
         	Wall.saveRoute(route);
-        	readMessage = null;    		
-    		if (routeCount < numRoutes-1){
+        	readMessage = null;   
+        	
+    		if (routeCount < numRoutes-1)
+    		{
         		conversation_state = NUM_ROUTES;
     			messageToSend = "nextRoute";
     		}
-    		else{
+    		
+    		else
+    		{
     			conversation_state = START_CLIMB;
     			messageToSend = "startClimb";
     		}
     		routeCount++;
     	}
-    	if (btMessage.contains(M_START_CLIMB)){
+    	if (btMessage.contains(M_START_CLIMB))
+    	{
     		readMessage = null;
 			Intent switchToClimbView = new Intent(this, ClimbActivity.class);
 			startActivity(switchToClimbView);
@@ -573,11 +597,14 @@ public class SplashScreen extends Activity {
 	        mChatService.stop();
 	        finish();
     	}
-    	if (btMessage.contains(M_RESEND)){
+    	
+    	if (btMessage.contains(M_RESEND))
+    	{
     		messageToSend = bluetoothConversation (conversation_state);
     	}
     	
-    	if (messageToSend != null){
+    	if (messageToSend != null)
+    	{
        	    SystemClock.sleep(200);
         	sendMessage(messageToSend);
             Log.d(TAG, "message sent: " + messageToSend);
@@ -586,7 +613,8 @@ public class SplashScreen extends Activity {
     	
     }
     
-    private String bluetoothConversation (int currState){
+    private String bluetoothConversation (int currState)
+    {
     	String message = null;
     	switch (currState) {
         case HELLO:

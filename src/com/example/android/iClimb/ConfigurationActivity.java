@@ -126,14 +126,12 @@ public class ConfigurationActivity extends Activity {
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        
-        this.setTitle("Configuration");
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         
         setContentView(configRelativeLayout, relativeLayoutParameters);
         Resources res = getResources();
 		Drawable drawable = res.getDrawable(R.drawable.background);
-		drawable.setAlpha(125);
+		//drawable.setAlpha(125);
 		configRelativeLayout.setBackgroundDrawable(drawable);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -164,7 +162,7 @@ public class ConfigurationActivity extends Activity {
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
-        	node = new Node(this, node.getBefore(), reference.getAddress(), reference.getX(), reference.getY());
+        	node = new Node(this, node.getBefore(), null, reference.getX(), reference.getY());
         	
         	node.setOnTouchListener(new OnTouchListener() 
         	{
@@ -242,7 +240,7 @@ public class ConfigurationActivity extends Activity {
         	nodes.add(node);
         }
         
-        Wall.mapNodes(nodes);
+       
     }
     
     @Override
@@ -287,6 +285,7 @@ public class ConfigurationActivity extends Activity {
 			case R.id.action_climb:
 				//Intent i=new Intent(context, ClimbActivity.class);
 				sendMessage("startClimb");
+				 Wall.mapNodes(nodes);
 				Intent switchView = new Intent(this, ClimbActivity.class);
 				startActivity(switchView);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);

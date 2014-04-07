@@ -52,13 +52,14 @@ public class SetupActivity extends Activity
 		setupRelativeLayout = new RelativeLayout(this);
 		Resources res = getResources();
 		Drawable drawable = res.getDrawable(R.drawable.background);
-		drawable.setAlpha(125);
+		//drawable.setAlpha(125);
 		setupRelativeLayout.setBackgroundDrawable(drawable);
 		relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 		
 		setContentView(setupRelativeLayout, relativeLayoutParameters);
 		
 		wallNameDialog = new Dialog(this);
+		
     	wallNameDialog.setContentView(R.layout.route_name_window);
     	wallNameDialog.setTitle("Name Your Wall");
     	Button okButton = (Button)wallNameDialog.findViewById(R.id.ok_button);
@@ -77,7 +78,10 @@ public class SetupActivity extends Activity
 			}
 		});
     	
+    	wallNameDialog.setCanceledOnTouchOutside(false);
+    	wallNameDialog.setCancelable(false);
     	wallNameDialog.show();
+    	//setFinishOnTouchOutside(false);
 	}
 
 	@Override
