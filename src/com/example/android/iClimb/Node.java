@@ -18,6 +18,7 @@ public class Node extends ToggleButton {
 		super(c);
 		nodeBefore = n;
 		configuration();
+		address = null;
 	}
 	
 	Node(Context c, Node n, String addr, float x, float y)

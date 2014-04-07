@@ -36,12 +36,9 @@ public class Wall
 		allNodes = nodes;
 	}
 	
-	public static void mapNodes(ArrayList<Node> nodes)
+	public static void mapNode(Node n)
 	{
-		for(int i = 0; i<nodes.size(); i++)
-		{
-			mappedNodes.put(nodes.get(i).getAddress(), nodes.get(i));
-		}
+			mappedNodes.put(n.getAddress(), n);
 	}
 	
 	//public static HashMap<String, Node> getNodes()
@@ -50,11 +47,15 @@ public class Wall
 		return allNodes;
 	}
 	
-	public static HashMap<String, Node> getMappedNodes()
+	public static Node getMappedNode(String addr)
+	{
+		return mappedNodes.get(addr);
+	}
+	
+	public static HashMap<String, Node>getAllNodes()
 	{
 		return mappedNodes;
 	}
-	
 	public static ArrayList<Route> getRoutes()
 	{
 		return routes;

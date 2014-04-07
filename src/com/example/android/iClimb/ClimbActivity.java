@@ -162,7 +162,7 @@ public class ClimbActivity extends Activity {
             return;
         }
        
-        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getMappedNodes().values());
+        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getAllNodes().values());
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);

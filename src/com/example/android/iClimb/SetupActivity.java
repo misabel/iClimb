@@ -212,7 +212,6 @@ public class SetupActivity extends Activity
 		  }); 
 		tb.setIcon(R.drawable.gray_hold);
 		setupRelativeLayout.addView(tb);
-		Toast.makeText(this, tb.getAddress(), Toast.LENGTH_SHORT).show();
 		
 	}
 }

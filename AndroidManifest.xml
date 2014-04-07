@@ -44,7 +44,7 @@
         <activity
             android:name="com.example.android.iClimb.DeviceListActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/select_device" />
+            android:label="@string/select_device"  />
         
          <activity
             android:name="com.example.android.iClimb.SetupActivity"

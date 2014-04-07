@@ -151,7 +151,7 @@ public class ConfigurationActivity extends Activity {
      * This Method will call all saved nodes and will add an ontouch listener to each node that will respond to each touch by saving
      * the current address to the touched node and sending a message to the hub requesting the next address be sent.
      * */
-    
+    Node currNode;
     private void setnodes()
     {
     	
@@ -170,7 +170,7 @@ public class ConfigurationActivity extends Activity {
                 public boolean onTouch(View v, MotionEvent event)
                 {
                     int action = event.getAction();
-
+                    currNode = (Node) v;
                     //if node selected
                     if (action == MotionEvent.ACTION_DOWN ) 
                     {
@@ -181,9 +181,9 @@ public class ConfigurationActivity extends Activity {
                     else if (action == MotionEvent.ACTION_UP )
                     {
                     	if (addressToAssign!= null){
-                    		if (node.getAddress() == null)
+                    		if (currNode.getAddress() == null)
                     		{
-                    			node.setAddress(addressToAssign);
+                    			currNode.setAddress(addressToAssign);
         			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
         			        	nodesConfigured++;
         			        	undoButton.setEnabled(true);
@@ -206,7 +206,8 @@ public class ConfigurationActivity extends Activity {
                     					.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
                     						public void onClick(DialogInterface dialog,int id) {
                     							//Yes Button Clicked
-                                    			node.setAddress(addressToAssign);
+                                    			currNode.setAddress(addressToAssign);
+                                    			Wall.mapNode(currNode);
                         			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
                         			        	nodesConfigured++;
                         			        	undoButton.setEnabled(true);
@@ -280,12 +281,13 @@ public class ConfigurationActivity extends Activity {
 	        	undoButton.setEnabled(false);
 	        	nodesConfigured--;
 	        	addressToAssign = previouslyAssignedAddress;
+	        	//node = Wall.getMappedNode(addressToAssign);
 	        	sendMessage("undo \n" + previouslyAssignedAddress);
 			break;
 			case R.id.action_climb:
 				//Intent i=new Intent(context, ClimbActivity.class);
 				sendMessage("startClimb");
-				 Wall.mapNodes(nodes);
+				
 				Intent switchView = new Intent(this, ClimbActivity.class);
 				startActivity(switchView);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
