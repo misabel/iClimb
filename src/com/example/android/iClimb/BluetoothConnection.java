@@ -108,10 +108,18 @@ public class BluetoothConnection {
         if (D) Log.d(TAG, "start");
 
         // Cancel any thread attempting to make a connection
-        if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
+        if (mConnectThread != null) {
+        	mConnectThread.interrupt();
+        	mConnectThread.cancel(); 
+        	mConnectThread = null;
+        }
 
         // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
+        if (mConnectedThread != null) {
+        	mConnectedThread.interrupt(); 
+        	mConnectedThread.cancel(); 
+        	mConnectedThread = null;
+        }
 
         setState(STATE_LISTEN);
 

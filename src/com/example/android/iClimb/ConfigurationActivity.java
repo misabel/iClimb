@@ -291,6 +291,7 @@ public class ConfigurationActivity extends Activity {
 				Intent switchView = new Intent(this, ClimbActivity.class);
 				startActivity(switchView);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+		        finish();
 			break;
 			case R.id.action_start_config:
 				setnodes();
@@ -321,19 +322,6 @@ public class ConfigurationActivity extends Activity {
         {
             if (mChatService == null) setupChat();
         }
-         {
-           /* if (mChatService == null) {
-            	//mChatService.stop();
-            	if (mChatService.getState() == 2){
-                	setupChat();
-                	mChatService.stop();
-    	            Intent serverIntent = new Intent(this, DeviceListActivity.class);
-    	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-            	}else{
-            		setupChat();
-            	}
-            	}*/
-       }
     }
 
     @Override
