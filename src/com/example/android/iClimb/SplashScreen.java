@@ -290,7 +290,7 @@ public class SplashScreen extends Activity {
     public void onDestroy() {
         super.onDestroy();
         // Stop the Bluetooth chat services
-       //if (mChatService != null) mChatService.stop();
+       if (mChatService != null) mChatService.stop();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
@@ -498,7 +498,7 @@ public class SplashScreen extends Activity {
 				
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 		      
-		       // finish();
+		        finish();
         	}
 
     	}
@@ -571,7 +571,7 @@ public class SplashScreen extends Activity {
 			startActivity(switchToClimbView);
 	        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 	        mChatService.stop();
-	       // finish();
+	        finish();
     	}
     	if (btMessage.contains(M_RESEND)){
     		messageToSend = bluetoothConversation (conversation_state);
