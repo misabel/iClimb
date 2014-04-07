@@ -14,7 +14,7 @@ public class Wall
 	public static int numNodes = 0;
 	public static int numRoutes = 0;
 	
-	public String getName()
+	public static String getName()
 	{
 		return name;
 	}
