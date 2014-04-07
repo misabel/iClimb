@@ -60,7 +60,7 @@ public class SetupActivity extends Activity
 		
 		wallNameDialog = new Dialog(this);
     	wallNameDialog.setContentView(R.layout.route_name_window);
-    	wallNameDialog.setTitle("Name Your Route");
+    	wallNameDialog.setTitle("Name Your Wall");
     	Button okButton = (Button)wallNameDialog.findViewById(R.id.ok_button);
         wallNameField = (EditText)wallNameDialog.findViewById(R.id.route_name_tf);
 

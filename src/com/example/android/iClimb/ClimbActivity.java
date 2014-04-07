@@ -69,7 +69,7 @@ public class ClimbActivity extends Activity {
     private int currColor = 0;
     private String[] diffColors = { "White", "Red", "Yellow", "Green", "Cyan", "Blue", "Violet" };
     private int[] holdIcons = { R.drawable.white_hold, R.drawable.red_hold, R.drawable.yellow_hold, R.drawable.green_hold, R.drawable.cyan_hold, R.drawable.blue_hold, R.drawable.violet_hold};
-	private String[] hexEquiv = { "FFFFFF", "FF0000", "FFFF00", "00FF00", "00FFFF", "0000FF", "FF00FF" };
+	private String[] rgbEquiv = { "255 255 255", "255 0 0 ", "255 255 0", "0 255 0", "0 255 255", "0 0 255", "255 0 255" };
     private MenuItem drawButton;
     private int[] colorIcons = {R.drawable.ic_action_edit,        R.drawable.ic_action_edit_red, 
     					 R.drawable.ic_action_edit_yellow, R.drawable.ic_action_edit_green, 
@@ -161,7 +161,7 @@ public class ClimbActivity extends Activity {
             return;
         }
        
-        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getNodes().values());
+        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getMappedNodes().values());
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -174,7 +174,7 @@ public class ClimbActivity extends Activity {
 						Node n = (Node)button;
 						if(isChecked)
 						{
-							n.setColor(hexEquiv[currColor]);
+							n.setColor(rgbEquiv[currColor]);
 							n.setIcon(holdIcons[currColor]);
 						}
 						

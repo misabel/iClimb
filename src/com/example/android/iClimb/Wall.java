@@ -8,7 +8,8 @@ public class Wall
 	
 	private static ArrayList<Route> routes = new ArrayList<Route>();
 	private static ArrayList<String> routeNames = new ArrayList<String>();
-	private static HashMap<String, Node> allNodes = new HashMap<String, Node>();
+	private static HashMap<String, Node> mappedNodes = new HashMap<String, Node>();
+	private static ArrayList<Node> allNodes = new ArrayList<Node>();
 	private static String name;
 	public static int numNodes = 0;
 	public static int numRoutes = 0;
@@ -31,16 +32,27 @@ public class Wall
 	
 	public static void saveNodes(ArrayList<Node> nodes)
 	{
-		allNodes.clear();
+		
+		allNodes = nodes;
+	}
+	
+	public static void mapNodes(ArrayList<Node> nodes)
+	{
 		for(int i = 0; i<nodes.size(); i++)
 		{
-			allNodes.put(nodes.get(i).getAddress(), nodes.get(i));
+			mappedNodes.put(nodes.get(i).getAddress(), nodes.get(i));
 		}
 	}
 	
-	public static HashMap<String, Node> getNodes()
+	//public static HashMap<String, Node> getNodes()
+	public static ArrayList<Node> getNodes()
 	{
 		return allNodes;
+	}
+	
+	public static HashMap<String, Node> getMappedNodes()
+	{
+		return mappedNodes;
 	}
 	
 	public static ArrayList<Route> getRoutes()

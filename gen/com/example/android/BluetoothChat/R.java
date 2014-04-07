@@ -113,43 +113,44 @@ public final class R {
         public static final int splash=0x7f070003;
     }
     public static final class string {
-        public static final int action_reset=0x7f060011;
-        public static final int action_settings=0x7f06001b;
+        public static final int action_reset=0x7f060014;
+        public static final int action_settings=0x7f06001d;
         public static final int app_name=0x7f060000;
-        public static final int blue_pencil=0x7f060015;
-        public static final int bt_not_enabled_leaving=0x7f060003;
-        public static final int button_scan=0x7f06000d;
-        public static final int color_select=0x7f060012;
-        public static final int cyan_pencil=0x7f060018;
-        public static final int discoverable=0x7f060010;
-        public static final int green_pencil=0x7f060016;
-        public static final int hello_world=0x7f06001c;
-        public static final int insecure_connect=0x7f06000f;
-        public static final int none_found=0x7f06000a;
-        public static final int none_paired=0x7f060009;
-        public static final int not_connected=0x7f060002;
+        public static final int blue_pencil=0x7f060018;
+        public static final int bt_not_enabled_leaving=0x7f060006;
+        public static final int button_scan=0x7f060010;
+        public static final int color_select=0x7f060015;
+        public static final int cyan_pencil=0x7f06001b;
+        public static final int discoverable=0x7f060013;
+        public static final int green_pencil=0x7f060019;
+        public static final int hello_world=0x7f06001e;
+        public static final int insecure_connect=0x7f060012;
+        public static final int none_found=0x7f06000d;
+        public static final int none_paired=0x7f06000c;
+        public static final int not_connected=0x7f060005;
         /**  Different Colored Pencils... 
          */
-        public static final int purple_pencil=0x7f060013;
-        public static final int red_pencil=0x7f060014;
+        public static final int purple_pencil=0x7f060016;
+        public static final int red_pencil=0x7f060017;
         /**  DeviceListActivity 
          */
-        public static final int scanning=0x7f060007;
+        public static final int scanning=0x7f06000a;
         /**  Options Menu 
          */
-        public static final int secure_connect=0x7f06000e;
-        public static final int select_device=0x7f060008;
+        public static final int secure_connect=0x7f060011;
+        public static final int select_device=0x7f06000b;
         /**  BluetoothChat 
          */
-        public static final int send=0x7f060001;
-        public static final int title_activity_configuration=0x7f06001d;
-        public static final int title_activity_setup=0x7f06001a;
-        public static final int title_connected_to=0x7f060005;
-        public static final int title_connecting=0x7f060004;
-        public static final int title_not_connected=0x7f060006;
-        public static final int title_other_devices=0x7f06000c;
-        public static final int title_paired_devices=0x7f06000b;
-        public static final int white_pencil=0x7f060019;
-        public static final int yellow_pencil=0x7f060017;
+        public static final int send=0x7f060004;
+        public static final int title_activity_climb=0x7f060003;
+        public static final int title_activity_configuration=0x7f060002;
+        public static final int title_activity_setup=0x7f060001;
+        public static final int title_connected_to=0x7f060008;
+        public static final int title_connecting=0x7f060007;
+        public static final int title_not_connected=0x7f060009;
+        public static final int title_other_devices=0x7f06000f;
+        public static final int title_paired_devices=0x7f06000e;
+        public static final int white_pencil=0x7f06001c;
+        public static final int yellow_pencil=0x7f06001a;
     }
 }

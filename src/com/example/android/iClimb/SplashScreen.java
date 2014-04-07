@@ -147,7 +147,6 @@ public class SplashScreen extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-    	
         // Set up the window layout
         setContentView(R.layout.activity_splash);
         splashRelativeLayout = new RelativeLayout(this);
@@ -194,12 +193,12 @@ public class SplashScreen extends Activity {
         loadingAnim.start();
         }
     	 
-		@Override
+		/*@Override
 		protected void onPostExecute(String result)
 		{
 	        loadingIcon.setVisibility(View.GONE);
 	        loadingAnim.stop();
-		}
+		}*/
     }
     @Override
 
@@ -291,7 +290,7 @@ public class SplashScreen extends Activity {
     public void onDestroy() {
         super.onDestroy();
         // Stop the Bluetooth chat services
-        //if (mChatService != null) mChatService.stop();
+       //if (mChatService != null) mChatService.stop();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
@@ -493,11 +492,13 @@ public class SplashScreen extends Activity {
         	//if the wall is not configured, switch views to setup view
         	else{
         		readMessage = null;
+        		// mChatService.stop();
 				Intent switchToSetupView = new Intent(this, SetupActivity.class);
 				startActivity(switchToSetupView);
+				
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-		        //mChatService.stop();
-		        finish();
+		      
+		       // finish();
         	}
 
     	}
@@ -569,8 +570,8 @@ public class SplashScreen extends Activity {
 			Intent switchToClimbView = new Intent(this, ClimbActivity.class);
 			startActivity(switchToClimbView);
 	        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-	        //mChatService.stop();
-	        finish();
+	        mChatService.stop();
+	       // finish();
     	}
     	if (btMessage.contains(M_RESEND)){
     		messageToSend = bluetoothConversation (conversation_state);

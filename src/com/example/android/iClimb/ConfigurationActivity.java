@@ -152,8 +152,11 @@ public class ConfigurationActivity extends Activity {
     
     private void setnodes()
     {
-        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getNodes().values());
-        
+    	
+      //  ArrayList<Node> refNodes =new ArrayList<Node>();
+        //refNodes.addAll(Wall.getNodes().values());
+        //ArrayList<Node> refNodes = Wall.getNodes();
+    	ArrayList<Node> refNodes = Wall.getNodes();
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -228,9 +231,9 @@ public class ConfigurationActivity extends Activity {
             });
 	    	configRelativeLayout.addView(node);
         	nodes.add(node);
-        	
-        	
         }
+        
+        Wall.mapNodes(nodes);
     }
     
     @Override
@@ -295,23 +298,25 @@ public class ConfigurationActivity extends Activity {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         // Otherwise, setup the chat session
-        } else 
+        } 
+        
+        else 
         {
             if (mChatService == null) setupChat();
         }
-//        {
-//            if (mChatService == null) {
-//            	//mChatService.stop();
-//            	if (mChatService.getState() == 2){
-//                	setupChat();
-//                	mChatService.stop();
-//    	            Intent serverIntent = new Intent(this, DeviceListActivity.class);
-//    	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-//            	}else{
-//            		setupChat();
-//            	}
-//            }
-//        }
+         {
+           /* if (mChatService == null) {
+            	//mChatService.stop();
+            	if (mChatService.getState() == 2){
+                	setupChat();
+                	mChatService.stop();
+    	            Intent serverIntent = new Intent(this, DeviceListActivity.class);
+    	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+            	}else{
+            		setupChat();
+            	}
+            	}*/
+       }
     }
 
     @Override

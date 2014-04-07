@@ -53,7 +53,7 @@
                 
         <activity
             android:name="com.example.android.iClimb.ClimbActivity"
-            android:label="@string/title_activity_setup" >
+            android:label="@string/title_activity_climb" >
         </activity>
         <activity
             android:name="com.example.android.iClimb.ConfigurationActivity"

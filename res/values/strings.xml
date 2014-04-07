@@ -18,7 +18,10 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">Scale</string>
-
+	<string name="title_activity_setup">Setup Wall</string>
+	<string name="title_activity_configuration">Configuration</string>
+	<string name="title_activity_climb">Let\'s Climb!</string>
+	
     <!-- BluetoothChat -->
     <string name="send">Send</string>
     <string name="not_connected">You are not connected to a device</string>
@@ -51,9 +54,7 @@
     <string name="yellow_pencil">Yellow Pencil</string>
     <string name="cyan_pencil">Cyan Pencil</string>
     <string name="white_pencil">White Pencil</string>
-    <string name="title_activity_setup">SetupActivity</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_configuration">ConfigurationActivity</string>
 
 </resources>
