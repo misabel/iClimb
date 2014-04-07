@@ -208,10 +208,6 @@ public class BluetoothConnection {
             mSecureAcceptThread = null;
         }
 
-        if (mInsecureAcceptThread != null) {
-            mInsecureAcceptThread.cancel();
-            mInsecureAcceptThread = null;
-        }
         setState(STATE_NONE);
     }
 
@@ -452,7 +448,6 @@ public class BluetoothConnection {
             //byte[] buffer = new byte[1024];
             //int bytes;
 
-            // Keep listening to the InputStream while connected
             while (true) {
                 try {
 
@@ -472,13 +467,20 @@ public class BluetoothConnection {
                            break;
                        }
                         // Send the obtained bytes to the UI Activity
-                        //mHandler.obtainMessage(ClimbActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
-                        //mHandler.obtainMessage(ConfigurationActivity.MESSAGE_READ, bytes, -1, copy).sendToTarget();
                         mHandler.obtainMessage(SplashScreen.MESSAGE_READ, bytes, -1, copy).sendToTarget();
+                        //mHandler.obtainMessage(BluetoothChat.MESSAGE_READ, bytes, -1, readMessage.getBytes()).sendToTarget();
                    }
                    else {
-                 	  SystemClock.sleep(100);
+                 	  SystemClock.sleep(200);
                    }
+                   
+                  /* bytes = mmInStream.read(buffer);
+                   readMessage = new String(buffer, 0, bytes);
+                   System.arraycopy(buffer, 0, copy, 0, copy.length);
+
+                   // Send the obtained bytes to the UI Activity
+                   mHandler.obtainMessage(BluetoothChat.MESSAGE_READ, bytes, -1, copy).sendToTarget();*/
+                   
                    
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
@@ -512,4 +514,5 @@ public class BluetoothConnection {
             }
         }
     }
+   
 }

@@ -67,27 +67,40 @@ public class SplashScreen extends Activity {
     
     //store incoming bluetooth message
     public String readMessage;
+    private String messageToSend;
     
     //Wall information 
     public String wallName;
     public int numNodes = 0;
-    public int numPaths = 0;
+    public int numRoutes = 0;
     
     //Bluetooth conversation with hub states
     public static final int HELLO = 1;
     public static final int CONFIG = 2;
     public static final int WALL_NAME = 3;
     public static final int NUM_NODES = 4;
-    public static final int NEXT = 5;
-    public static final int NUM_PATHS = 6;
-    public static final int START_CLIMB = 7;
+    public static final int NEXT_NODE = 5;
+    public static final int NUM_ROUTES = 6;
+    public static final int NEXT_ROUTE = 7;
+    public static final int START_CLIMB = 8;
+    
+    //Expected hub responces
+    public static final String M_HELLO = "hello";
+    public static final String M_CONFIG = "config";
+    public static final String M_WALL_NAME = "wallName";
+    public static final String M_NUM_NODES = "#nodes";
+    public static final String M_NEXT_NODE = "nextNode";
+    public static final String M_NUM_ROUTES = "#routes";
+    public static final String M_NEXT_ROUTE = "nextRoute";
+    public static final String M_START_CLIMB = "fun";
+    public static final String M_RESEND = "resend";
     
     //state of conversation
     public int conversation_state = 0;
 
     //counters
     int nodeCount = 0;
-    int pathCount = 0;
+    int routeCount = 0;
     
     boolean nodesCalled = false;
     boolean pathsCalled = false;
@@ -278,7 +291,7 @@ public class SplashScreen extends Activity {
     public void onDestroy() {
         super.onDestroy();
         // Stop the Bluetooth chat services
-        if (mChatService != null) mChatService.stop();
+        //if (mChatService != null) mChatService.stop();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
@@ -365,9 +378,9 @@ public class SplashScreen extends Activity {
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 readMessage = new String(readBuf, 0, msg.arg1);
+           	    SystemClock.sleep(500);            
                 Log.d(TAG, "Received: " + readMessage);
-           	    SystemClock.sleep(200);            
-                bluetoothConversation(conversation_state);
+                bluetoothMessgeHandler(readMessage);
                 break;
             case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
@@ -422,148 +435,197 @@ public class SplashScreen extends Activity {
     }
     
     
-    private void bluetoothConversation (int currState){
-    	switch (currState) {
-        case HELLO:
-        	readMessage = null;
+    private void bluetoothMessgeHandler (String btMessage){
+    	messageToSend = null;
+    	if (btMessage.contains(M_HELLO)){
+    		readMessage = null;
         	conversation_state = CONFIG;
-        	sendMessage("config?");
+        	//sendMessage("config?");
+        	messageToSend = "config?";
             Log.d(TAG, "sent config?");
-            break;
-        case CONFIG:
-        	if(readMessage.contains("yes")){
+    	}
+    	if (btMessage.contains(M_CONFIG) ){
+    		if(readMessage.contains("yes")){
                 Log.d(TAG, "Wall configured");
             	configured = true;
             	readMessage = null;
+            	messageToSend = "wallName";
         	}
         	else if (readMessage.contains("no")){
                 Log.d(TAG, "Wall not configured");
         		configured = false;
         		readMessage = null;
+        		messageToSend = "wallName";
+        	}
+        	else{
+        		messageToSend = "config?";
         	}
     		conversation_state = WALL_NAME;
-       	    SystemClock.sleep(50);    		
-       	    sendMessage("wallName");
-            Log.d(TAG, "sent wallName");
-       	    ////SystemClock.sleep(100);            
-       	    break;
-        case WALL_NAME:
-        	String[] name = readMessage.split(":");
-        	//numNodes = Integer.parseInt(parts[parts.length-1]);
+    	}
+    	if (btMessage.contains(M_WALL_NAME)){
+    		String[] name = readMessage.split(":");
         	wallName = name[name.length-1];
             Log.d(TAG, "WALL NAME SET TO:" + wallName);
         	readMessage = null;
         	conversation_state = NUM_NODES;
-       	    //SystemClock.sleep(50);        	
-       	    sendMessage("#nodes");
-            Log.d(TAG, "sent #nodes");
-       	    ////SystemClock.sleep(100);            
-       	    break;
-        case NUM_NODES:
-        	if (configured){
-            	if(nodesCalled){
-                	String[] parts = readMessage.split(" ");
-            		if (nodeCount < numNodes -1){
-                		Node tn = null;
-                		Node temp = tn;
-                		temp = new Node (this, tn);
-                		temp.setAddress((parts[0]));
-                		temp.setX(Float.parseFloat(parts[1]));
-                		temp.setY(Float.parseFloat(parts[2]));
-                		nodes.add(temp);
-                		nodeCount++;
-                		readMessage = null;
-                   	    ////SystemClock.sleep(100);                		
-                		sendMessage("next");
-                        Log.d(TAG, "sent next");
-                	}
-            		Node tn = null;
-            		Node temp = tn;
-            		temp = new Node (this, tn);
-            		temp.setAddress((parts[0]));
-            		temp.setX(Float.parseFloat(parts[1]));
-            		temp.setY(Float.parseFloat(parts[2]));
-            		nodes.add(temp);
-            		nodeCount++;
-            		readMessage = null;
-                	conversation_state = START_CLIMB;
-                	Wall.saveNodes(nodes);
-               	    ////SystemClock.sleep(100);                	
-                	sendMessage ("#paths");
-                    Log.d(TAG, "sent #paths");
-            	}
-            	else{
-                	String[] nodes = readMessage.split("\n");
-                	numNodes = Integer.parseInt(nodes[nodes.length-1]);
-                	//wallName = nodes[nodes.length-1];
-               	    ////SystemClock.sleep(100);                	
-                	sendMessage("next");
-                    Log.d(TAG, "sent next");
-                	nodesCalled = true;
-            	}
-        	}//end if configured
-        	//if not configured switch to setup view
-        	else if(!configured){
-            	String[] parts = readMessage.split("\n");
-            	numNodes = Integer.parseInt(parts[parts.length-1]);
-                Log.d(TAG, "set numNodes to: " + numNodes);
-                if(numNodes >= 0){
-                	Wall.setNumNodes(numNodes);
-                }
-            	readMessage = null;
+       	    SystemClock.sleep(100);        	
+       	    messageToSend = "#nodes";
+    	}
+    	if (btMessage.contains(M_NUM_NODES)){
+        	String[] nodes = readMessage.split("\\r?\\n");
+        	numNodes = Integer.parseInt(nodes[nodes.length-1]);
+            Log.d(TAG, "num nodes set to: " + numNodes);
+        	Wall.setNumNodes(numNodes);
+        	//if the wall is configured initiallize the NEXTNODE conversation to receive nodes
+        	if(configured){
+        		if (numNodes > 0){
+                	messageToSend = "nextNode";
+                	nodeCount = 0;
+                	conversation_state = NEXT_NODE;
+        		}
+        		else{
+        			messageToSend = "#routes";
+        			conversation_state = NUM_ROUTES;
+        		}
+
+            	
+        	}
+        	//if the wall is not configured, switch views to setup view
+        	else{
+        		readMessage = null;
 				Intent switchToSetupView = new Intent(this, SetupActivity.class);
 				startActivity(switchToSetupView);
 		        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+		        //mChatService.stop();
+		        finish();
         	}
 
-        case NUM_PATHS:
-        	if(!configured){
-        		break;
+    	}
+    	if (btMessage.contains(M_NEXT_NODE)){
+        	String[] parts = readMessage.split("\n");
+        	String[] nodeParts = parts[1].split(" ");
+    		Node tn = null;
+    		Node temp = tn;
+    		temp = new Node (this, tn);
+    		temp.setAddress((nodeParts[0]));
+    		temp.setX(Float.parseFloat(nodeParts[1]));
+    		temp.setY(Float.parseFloat(nodeParts[2]));
+            Log.d(TAG, "Node set to: " + temp.getAddress()+" , " + temp.getX() +" , " + temp.getY());
+    		nodes.add(temp);
+    		readMessage = null;    		
+    		if (nodeCount < numNodes-1){
+        		conversation_state = NEXT_NODE;
+    			messageToSend = "nextNode";
+    		}
+    		else if (nodeCount == numNodes-1){
+    			conversation_state = NUM_ROUTES;
+    			messageToSend = "#routes";
+    		}
+    		nodeCount++;
+    		
+    	}
+    	if (btMessage.contains(M_NUM_ROUTES)){
+    		String[] routes = readMessage.split("\n");
+        	numRoutes = Integer.parseInt(routes[routes.length-1]);
+            Log.d(TAG, "num routes set to: " + numRoutes);
+        	Wall.setNumRoutes(numRoutes); 
+    		if (numRoutes > 0){
+            	messageToSend = "nextRoute";
+            	routeCount = 0;
+            	conversation_state = NEXT_ROUTE;
+    		}
+    		else{
+    			messageToSend = "startClimb";
+    			conversation_state = START_CLIMB;
+    		}
+    	}
+    	if (btMessage.contains(M_NEXT_ROUTE)){
+        	String[] routeParts = readMessage.split("\n");
+        	Route route = new Route(routeParts[2]);
+        	route.setID(routeParts[1]);
+        	String[] routeNodes = routeParts[3].split(" ");
+        	for(int i=0; i<routeNodes.length; i++){
+        		Node tn = null;
+        		Node temp = tn;
+        		temp = new Node (this, tn);
+        		temp.setAddress((routeNodes[i]));
+        		route.addNode(temp);
+                Log.d(TAG, "added Node" + temp.getAddress()+" to route " + route.getid() +"  named  " + route.getName());
         	}
-        	if(pathsCalled){
-        		if (pathCount < numPaths -1){
-					Route route = new Route(readMessage);
-					Wall.saveRoute(route);
-            		pathCount++;
-            		readMessage = null;
-               	    ////SystemClock.sleep(100);            		
-            		sendMessage("next");
-                    Log.d(TAG, "sent next");
-
-            	}
-        		Route route = new Route(readMessage);
-        		Wall.saveRoute(route);
-        		pathCount++;
-        		readMessage = null;
-            	conversation_state = START_CLIMB;
-           	    ////SystemClock.sleep(100);            	
-            	sendMessage ("startClimb");
-                Log.d(TAG, "sent startclimb");
-        	}
-        	else{
-            	String[] paths = readMessage.split("\n");
-            	numPaths = Integer.parseInt(paths[paths.length-1]);
-                Log.d(TAG, "set numPaths to: " + numPaths);
-            	Wall.setNumPaths(numPaths);
-            	readMessage = null;
-           	    ////SystemClock.sleep(100);            	
-            	sendMessage("next");
-                Log.d(TAG, "sent next");
-            	pathsCalled = true;
-        	}
-            break;
-        case START_CLIMB:
+        	Wall.saveRoute(route);
+        	readMessage = null;    		
+    		if (routeCount < numRoutes-1){
+        		conversation_state = NUM_ROUTES;
+    			messageToSend = "nextRoute";
+    		}
+    		else{
+    			conversation_state = START_CLIMB;
+    			messageToSend = "startClimb";
+    		}
+    		routeCount++;
+    	}
+    	if (btMessage.contains(M_START_CLIMB)){
     		readMessage = null;
 			Intent switchToClimbView = new Intent(this, ClimbActivity.class);
 			startActivity(switchToClimbView);
 	        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+	        //mChatService.stop();
+	        finish();
+    	}
+    	if (btMessage.contains(M_RESEND)){
+    		messageToSend = bluetoothConversation (conversation_state);
+    	}
+    	
+    	if (messageToSend != null){
+       	    SystemClock.sleep(200);
+        	sendMessage(messageToSend);
+            Log.d(TAG, "message sent: " + messageToSend);
+    	}
+
+    	
+    }
+    
+    private String bluetoothConversation (int currState){
+    	String message = null;
+    	switch (currState) {
+        case HELLO:
+        	readMessage = null;
+        	message = "config?";
+            break;
+        case CONFIG:
+        	readMessage = null;
+        	message = "config?";
+            break;
+        case WALL_NAME:
+        	readMessage = null;
+        	message = "wallName";
+            break;
+        case NUM_NODES:
+        	readMessage = null;
+        	message = "#nodes";
+            break;
+        case NEXT_NODE:
+        	readMessage = null;
+        	message = "nextNode";
+            break;
+        case NUM_ROUTES:
+        	readMessage = null;
+        	message = "#routes";
+            break;
+        case NEXT_ROUTE:
+        	readMessage = null;
+        	message = "nextRoute";
+            break;
+        case START_CLIMB:
+        	readMessage = null;
+        	message = "startClimb";
             break;
         default:
-        
+            Log.d(TAG, "DID NOT MEET A CASE" + messageToSend);
         break;
             
         }
-    	
+    	return message;
     }
 
 }

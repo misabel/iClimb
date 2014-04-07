@@ -11,7 +11,7 @@ public class Wall
 	private static HashMap<String, Node> allNodes = new HashMap<String, Node>();
 	private static String name;
 	public static int numNodes = 0;
-	public static int numPaths = 0;
+	public static int numRoutes = 0;
 	
 	public String getName()
 	{
@@ -68,13 +68,13 @@ public class Wall
 		return numNodes;
 	}
 	
-	public static void setNumPaths(int nPaths)
+	public static void setNumRoutes(int nPaths)
 	{
-		numPaths = nPaths;
+		numRoutes = nPaths;
 	}
 	
-	public static int getNumPaths()
+	public static int getNumRoutes()
 	{
-		return numPaths;
+		return numRoutes;
 	}
 }

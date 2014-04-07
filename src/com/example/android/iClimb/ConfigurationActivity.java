@@ -141,7 +141,7 @@ public class ConfigurationActivity extends Activity {
             return;
         }        
         
-        //setnodes();
+        setnodes();
        
     }
     
@@ -152,7 +152,7 @@ public class ConfigurationActivity extends Activity {
     
     private void setnodes()
     {
-        ArrayList<Node> refNodes = (ArrayList<Node>) Wall.getNodes().values();
+        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getNodes().values());
         
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
@@ -299,6 +299,19 @@ public class ConfigurationActivity extends Activity {
         {
             if (mChatService == null) setupChat();
         }
+//        {
+//            if (mChatService == null) {
+//            	//mChatService.stop();
+//            	if (mChatService.getState() == 2){
+//                	setupChat();
+//                	mChatService.stop();
+//    	            Intent serverIntent = new Intent(this, DeviceListActivity.class);
+//    	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+//            	}else{
+//            		setupChat();
+//            	}
+//            }
+//        }
     }
 
     @Override

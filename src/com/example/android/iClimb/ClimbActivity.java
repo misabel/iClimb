@@ -85,6 +85,13 @@ public class ClimbActivity extends Activity {
     public static final int STOP_DRAGGING = 0;
     public static final int START_DRAGGING = 1;
     
+    //Bluetooth commands
+    public static final String ILLUMINATE_NODE = "illNode";
+    public static final String ILLUMINATE_ROUTE = "illRoute";
+    public static final String SAVE_ROUTE = "saveRoute";
+    public static final String DELETE_ROUTE = "deleteRoute";
+
+    
     //store incoming bluetooth message
     public String readMessage;
 
@@ -100,13 +107,14 @@ public class ClimbActivity extends Activity {
     // Name of the connected device
     private String mConnectedDeviceName = null;
     // Array adapter for the conversation thread
-    private ArrayAdapter<String> mConversationArrayAdapter;
+    //private ArrayAdapter<String> mConversationArrayAdapter;
     // String buffer for outgoing messages
     private StringBuffer mOutStringBuffer;
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the chat services
     private BluetoothConnection mChatService = null;
+    private SplashScreen splashService = null;
     
     RelativeLayout mainRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
@@ -153,7 +161,7 @@ public class ClimbActivity extends Activity {
             return;
         }
        
-        ArrayList<Node> refNodes = (ArrayList<Node>)Wall.getNodes().values();
+        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getNodes().values());
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -277,6 +285,7 @@ public class ClimbActivity extends Activity {
 				        	}
 				        
 					        	Wall.saveRoute(route);
+					        	
 					        	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
 					        	routeNameDialog.hide();
 				        	
@@ -410,10 +419,11 @@ public class ClimbActivity extends Activity {
         Log.d(TAG, "setupChat()");
 
         // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
-
+        //mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
+        
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothConnection(this, mHandler);
+
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
@@ -495,7 +505,6 @@ public class ClimbActivity extends Activity {
                 switch (msg.arg1) {
                 case BluetoothConnection.STATE_CONNECTED:
                     setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                    mConversationArrayAdapter.clear();
                     break;
                 case BluetoothConnection.STATE_CONNECTING:
                     setStatus(R.string.title_connecting);
@@ -518,7 +527,7 @@ public class ClimbActivity extends Activity {
                 // construct a string from the valid bytes in the buffer
                 readMessage = new String(readBuf, 0, msg.arg1);
                 //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
-                mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+                //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
                 break;
             case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
@@ -543,12 +552,6 @@ public class ClimbActivity extends Activity {
                 connectDevice(data, true);
             }
             break;
-       /* case REQUEST_CONNECT_DEVICE_INSECURE:
-            // When DeviceListActivity returns with a device to connect
-            if (resultCode == Activity.RESULT_OK) {
-                connectDevice(data, false);
-            }
-            break;*/
         case REQUEST_ENABLE_BT:
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
@@ -573,13 +576,23 @@ public class ClimbActivity extends Activity {
         mChatService.connect(device, secure);
     }
     
-    public String getMessage(){
-    	return readMessage;
-    }
+    /*
+    //Bluetooth commands
+    public static final String ILLUMINATE_NODE = "illNode";
+    public static final String ILLUMINATE_Route = "illRoute";
+    public static final String SAVE_ROUTE = "saveRoute";
+    public static final String DELETE_ROUTE = "deleteRoute";*/
     
-    public void clearMessage(){
-    	readMessage = null;
+    private void illuminateNode(Node n){
+    	sendMessage (ILLUMINATE_NODE + "\n" + n.getAddress()+ " " + "add Colors!!!!!");
     }
 
+    private void illuminateRoute(Route r){
+    	sendMessage (ILLUMINATE_ROUTE + "\n" + r.getid() + " " + "add Colors!!!!!" );
+    }
+    
+    private void deleteRoute (Route r){
+    	sendMessage(DELETE_ROUTE + "\n" + r.getid());
+    }
 
 }

@@ -143,9 +143,10 @@ public class SetupActivity extends Activity
 	{
 		if(event.getAction() == MotionEvent.ACTION_DOWN)
 		{
-			if(numNodes < 10)
+			if(numNodes < Wall.getNumNodes())
 			{
 				addToggleButton(event.getX(), event.getY());
+				Toast.makeText(this, "X: " + event.getX() + "Y: " + event.getY() , Toast.LENGTH_SHORT).show();
 				numNodes++;
 			}
 			else 
