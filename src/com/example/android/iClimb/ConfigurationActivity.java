@@ -104,9 +104,13 @@ public class ConfigurationActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	
+	private String addressToAssign = null;
+	private String previouslyAssignedAddress = null;
+	
 	//menu buttons
 	MenuItem configButton;
 	MenuItem undoButton;
+	MenuItem climbButton;
 
 	
     @SuppressWarnings("deprecation")
@@ -175,14 +179,16 @@ public class ConfigurationActivity extends Activity {
                     //else if node is released
                     else if (action == MotionEvent.ACTION_UP )
                     {
-                    	if (readMessage!= null){
+                    	if (addressToAssign!= null){
                     		if (node.getAddress() == null)
                     		{
-                    			node.setAddress(readMessage);
-        			        	sendMessage("setxy");
-        			        	sendMessage(node.getX() +" "+ node.getY());
-        			        	sendMessage("next");
+                    			node.setAddress(addressToAssign);
+        			        	sendMessage("setxy \n" + node.getX() +" "+ node.getY());
+        			        	nodesConfigured++;
+        			        	undoButton.setEnabled(true);
         			        	readMessage = null;
+        			        	previouslyAssignedAddress = addressToAssign;
+        			        	addressToAssign = null;
                     		}
                     		else
                     		{
@@ -199,10 +205,13 @@ public class ConfigurationActivity extends Activity {
                     					.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
                     						public void onClick(DialogInterface dialog,int id) {
                     							//Yes Button Clicked
-                        			        	node.setAddress(readMessage);
+                                    			node.setAddress(addressToAssign);
+                        			        	sendMessage("setxy \n" + node.getX() +" "+ node.getY());
+                        			        	nodesConfigured++;
+                        			        	undoButton.setEnabled(true);
                         			        	readMessage = null;
-
-                        			        	sendMessage("GIVE ME NEXT ADDRESS curr address is: " + node.getAddress());
+                        			        	previouslyAssignedAddress = addressToAssign;
+                        			        	addressToAssign = null;
                     						}
                     					  })
                     					.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
@@ -240,10 +249,14 @@ public class ConfigurationActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.configuration, menu);
 		configButton = menu.findItem(R.id.action_start_config);
-		configButton.setEnabled(true);
+		configButton.setEnabled(false);
 		
 		undoButton = menu.findItem(R.id.action_undo);
 		undoButton.setEnabled(false);
+		
+		climbButton = menu.findItem(R.id.action_climb);
+		climbButton.setEnabled(false);
+		
         return true;
     }
     
@@ -263,7 +276,10 @@ public class ConfigurationActivity extends Activity {
 	            ensureDiscoverable();
 	            return true;
 	        case R.id.action_undo:
-	        	sendMessage("undo");
+	        	undoButton.setEnabled(false);
+	        	nodesConfigured--;
+	        	addressToAssign = previouslyAssignedAddress;
+	        	sendMessage("undo \n" + previouslyAssignedAddress);
 			break;
 			case R.id.action_climb:
 				//Intent i=new Intent(context, ClimbActivity.class);
@@ -406,6 +422,12 @@ public class ConfigurationActivity extends Activity {
     {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(subTitle);
+        
+        if (subTitle.equals(getString(R.string.title_connected_to, mConnectedDeviceName))){
+        	sendMessage("setWallName\n " + Wall.getName());
+            Log.d(TAG, "sent setWallName");
+            //Toast.makeText(getApplicationContext(), "Sent Hello :D",  Toast.LENGTH_SHORT).show();
+        }
     }
 
     // The Handler that gets information back from the BluetoothChatService
@@ -434,7 +456,6 @@ public class ConfigurationActivity extends Activity {
 		                    break;
 		                    
 		                case BluetoothConnection.STATE_NONE:
-		                    //setStatus(R.string.title_not_connected);
 		                    break;
 	                }
                 break;
@@ -452,6 +473,7 @@ public class ConfigurationActivity extends Activity {
                 readMessage = new String(readBuf, 0, msg.arg1);
                 //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
                 mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+                handleHubMessage(readMessage);
                 break;
                 
             case MESSAGE_DEVICE_NAME:
@@ -499,6 +521,41 @@ public class ConfigurationActivity extends Activity {
         }
     }
 
+    private void handleHubMessage(String message){
+    	if (message.contains("setWallName")){
+        	if (message.contains("yes")){
+        		//sendMessage("");
+        		configButton.setEnabled(true);
+        	}
+    	}
+    	if (message.contains("Starting configuration")){
+    		sendMessage("nextAddress");
+    	}
+    	if (message.contains("nextAddress")){
+        	String[] nodeAddress = readMessage.split("\\r?\\n");
+        	addressToAssign = null;
+        	addressToAssign = nodeAddress[nodeAddress.length-1];
+        	undoButton.setEnabled(true);
+    	}
+    	if (message.contains("setxy")){
+    		if(message.contains("yes")){
+    			if(nodesConfigured < Wall.getNumNodes()){
+        			sendMessage("nextAddress");
+
+    			}else{
+    				sendMessage("startClimb");
+    			}
+    		}
+    		
+    	}//end setxy
+    	if(message.contains("fun!")){
+    		if(nodesConfigured == Wall.getNumNodes()){
+        		climbButton.setEnabled(true);
+    		}    		
+    	}
+    	
+    }
+    
     private void connectDevice(Intent data, boolean secure)
     {
         // Get the device MAC address

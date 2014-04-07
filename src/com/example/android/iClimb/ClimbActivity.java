@@ -128,6 +128,7 @@ public class ClimbActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	ArrayList<Node> routeToDisplay;
+	private Route routeToSave;
 	
     @Override
     /**
@@ -176,6 +177,7 @@ public class ClimbActivity extends Activity {
 						{
 							n.setColor(hexEquiv[currColor]);
 							n.setIcon(holdIcons[currColor]);
+							illuminateNode(n);
 						}
 						
 						else
@@ -284,9 +286,9 @@ public class ClimbActivity extends Activity {
 				        		}
 				        	}
 				        
-					        	Wall.saveRoute(route);
-					        	
-					        	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
+					        	//Wall.saveRoute(route);
+					        	routeToSave = route;
+					        	sendMessage("saveRoute\n" +route.getName());
 					        	routeNameDialog.hide();
 				        	
 						}
@@ -345,6 +347,7 @@ public class ClimbActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				adapter.remove(routeToRemove);
 				Wall.getNodes().remove(routeToRemove);
+				deleteRoute(routeToRemove);
 			}
 		});
     	warning.setNegativeButton("Cancel", null);
@@ -367,6 +370,7 @@ public class ClimbActivity extends Activity {
 				{	
 					nodes.get(i).turnOn();
 					nodes.get(i).setIcon(routeToLoad.getNodes().get(j).getIcon());
+					illuminateRoute(routeToLoad);
 					
 					break;
 				}
@@ -513,7 +517,6 @@ public class ClimbActivity extends Activity {
                     setStatus(R.string.title_not_connected);
                     break;
                 case BluetoothConnection.STATE_NONE:
-                    //setStatus(R.string.title_not_connected);
                     break;
                 }
                 break;
@@ -526,6 +529,9 @@ public class ClimbActivity extends Activity {
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 readMessage = new String(readBuf, 0, msg.arg1);
+                if(readMessage.contains("saveRoute")){
+                	saveRoute(routeToSave);
+                }
                 //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
                 //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
                 break;
@@ -593,6 +599,17 @@ public class ClimbActivity extends Activity {
     
     private void deleteRoute (Route r){
     	sendMessage(DELETE_ROUTE + "\n" + r.getid());
+    }
+    
+    private void saveRoute (Route r){
+    	if (readMessage.contains("yes")){
+    		Wall.saveRoute(r);
+        	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
+    	}
+    	else if (readMessage.contains("no")){
+        	Toast.makeText(cmain, "Unable to save Path", Toast.LENGTH_SHORT).show();
+    		
+    	}
     }
 
 }
