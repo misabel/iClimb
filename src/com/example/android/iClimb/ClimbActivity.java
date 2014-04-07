@@ -590,11 +590,13 @@ public class ClimbActivity extends Activity {
     public static final String DELETE_ROUTE = "deleteRoute";*/
     
     private void illuminateNode(Node n){
-    	sendMessage (ILLUMINATE_NODE + "\n" + n.getAddress()+ " " + "add Colors!!!!!");
+    	String [] rgbColors = rgbEquiv[currColor].split(" ");
+    	sendMessage (ILLUMINATE_NODE + "\n" + n.getAddress()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2]);
     }
 
     private void illuminateRoute(Route r){
-    	sendMessage (ILLUMINATE_ROUTE + "\n" + r.getid() + " " + "add Colors!!!!!" );
+    	String [] rgbColors = rgbEquiv[currColor].split(" ");
+    	sendMessage (ILLUMINATE_ROUTE + "\n" + r.getid()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
     }
     
     private void deleteRoute (Route r){
