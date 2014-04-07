@@ -184,7 +184,7 @@ public class ConfigurationActivity extends Activity {
                     		if (node.getAddress() == null)
                     		{
                     			node.setAddress(addressToAssign);
-        			        	sendMessage("setxy \n" + node.getX() +" "+ node.getY());
+        			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
         			        	nodesConfigured++;
         			        	undoButton.setEnabled(true);
         			        	readMessage = null;
@@ -207,7 +207,7 @@ public class ConfigurationActivity extends Activity {
                     						public void onClick(DialogInterface dialog,int id) {
                     							//Yes Button Clicked
                                     			node.setAddress(addressToAssign);
-                        			        	sendMessage("setxy \n" + node.getX() +" "+ node.getY());
+                        			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
                         			        	nodesConfigured++;
                         			        	undoButton.setEnabled(true);
                         			        	readMessage = null;
@@ -469,6 +469,7 @@ public class ConfigurationActivity extends Activity {
                 // construct a string from the buffer
                 @SuppressWarnings("unused")
 				String writeMessage = new String(writeBuf);
+                Log.d(TAG, "Writing: " + writeMessage);
                 break;
                 
             case MESSAGE_READ:
@@ -477,6 +478,7 @@ public class ConfigurationActivity extends Activity {
                 readMessage = new String(readBuf, 0, msg.arg1);
                 //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
                 mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+                Log.d(TAG, "Received: " + readMessage);
                 handleHubMessage(readMessage);
                 break;
                 
@@ -526,11 +528,8 @@ public class ConfigurationActivity extends Activity {
     }
 
     private void handleHubMessage(String message){
-    	if (message.contains("setWallName")){
-        	if (message.contains("yes")){
-        		//sendMessage("");
+    	if (message.contains("name")){
         		configButton.setEnabled(true);
-        	}
     	}
     	if (message.contains("Starting configuration")){
     		sendMessage("nextAddress");
@@ -541,7 +540,7 @@ public class ConfigurationActivity extends Activity {
         	addressToAssign = nodeAddress[nodeAddress.length-1];
         	undoButton.setEnabled(true);
     	}
-    	if (message.contains("setxy")){
+    	if (message.contains("setXY")){
     		if(message.contains("yes")){
     			if(nodesConfigured < Wall.getNumNodes()){
         			sendMessage("nextAddress");
@@ -552,7 +551,7 @@ public class ConfigurationActivity extends Activity {
     		}
 
     	}//end setxy
-    	if(message.contains("fun!")){
+    	if(message.contains("fun")){
     		if(nodesConfigured == Wall.getNumNodes()){
         		climbButton.setEnabled(true);
     		}    		
