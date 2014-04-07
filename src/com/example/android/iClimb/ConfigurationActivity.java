@@ -551,7 +551,7 @@ public class ConfigurationActivity extends Activity {
     				sendMessage("startClimb");
     			}
     		}
-    		
+
     	}//end setxy
     	if(message.contains("fun!")){
     		if(nodesConfigured == Wall.getNumNodes()){
