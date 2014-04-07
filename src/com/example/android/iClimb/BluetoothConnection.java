@@ -190,15 +190,23 @@ public class BluetoothConnection {
     /**
      * Stop all threads
      */
-    public synchronized void stop() {
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	public synchronized void stop() {
         if (D) Log.d(TAG, "stop");
 
+       /* if (mConnectedThread.mmSocket.isConnected()){
+        	mConnectedThread.interrupt();
+			mConnectThread.cancel();
+
+        }*/
+        
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
         }
 
         if (mConnectedThread != null) {
+        	mConnectedThread.interrupt();
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
@@ -449,6 +457,9 @@ public class BluetoothConnection {
             //int bytes;
 
             while (true) {
+            	if (isInterrupted()){
+            		return;
+            	}
                 try {
 
                     byte[] buffer = new byte[1024];
