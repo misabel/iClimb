@@ -596,7 +596,7 @@ public class ClimbActivity extends Activity {
 
     private void illuminateRoute(Route r){
     	String [] rgbColors = rgbEquiv[currColor].split(" ");
-    	sendMessage (ILLUMINATE_ROUTE + "\n" + r.getid()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
+    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getid()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
     }
     
     private void deleteRoute (Route r){
