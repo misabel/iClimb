@@ -190,7 +190,6 @@ public class ConfigurationActivity extends Activity {
                     		{
                     			currNode.setAddress(addressToAssign);
                     			//currNode.setIcon(R.drawable.green_hold);
-        			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
         			        	//assignedNodes.push(currNode);
         			        	nodesConfigured++;
         			        	undoButton.setEnabled(true);
@@ -198,6 +197,8 @@ public class ConfigurationActivity extends Activity {
         			        	currentNode = currNode;
         			        	previouslyAssignedAddress = addressToAssign;
         			        	addressToAssign = null;
+        			        	sendMessage("setXY\n" + currNode.getX() +" "+ currNode.getY());
+
                     		}
                     		else
                     		{
@@ -219,8 +220,8 @@ public class ConfigurationActivity extends Activity {
                                     			SystemClock.sleep(1000);
                                     			currNode.setIcon(R.drawable.green_hold);
                                     			Wall.mapNode(currNode);
-                        			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
                         			        	currentNode = currNode;
+                        			        	sendMessage("setXY\n" + currNode.getX() +" "+ currNode.getY());
                         			        	nodesConfigured++;
                         			        	undoButton.setEnabled(true);
                         			        	readMessage = null;
@@ -540,7 +541,7 @@ public class ConfigurationActivity extends Activity {
     }
 
     private void handleHubMessage(String message){
-    	if (message.contains("name")){
+    	if (message.contains("set")){
         		configButton.setEnabled(true);
     	}
     	if (message.contains("Starting configuration")){
@@ -555,7 +556,7 @@ public class ConfigurationActivity extends Activity {
     	if (message.contains("setXY")){
     		if(message.contains("yes")){
     			if(nodesConfigured < Wall.getNumNodes()){
-    	        	Wall.getMappedNode(currentNode.getAddress()).setIcon(R.drawable.green_hold);
+    	        	Wall.getMappedNode(previouslyAssignedAddress).setIcon(R.drawable.green_hold);
     				assignedNodes.push(currentNode);
     				previousNode = currentNode;
     				currentNode = null;
