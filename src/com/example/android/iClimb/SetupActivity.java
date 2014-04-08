@@ -11,6 +11,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -71,8 +72,9 @@ public class SetupActivity extends Activity
 			@Override
 			public void onClick(View arg0) 
 			{
-				
-				Wall.setWallName(wallNameField.getText().toString());
+				Editable e = wallNameField.getText();
+				String s = e.toString();
+				Wall.setWallName(s);
 		        wallNameDialog.hide();
 	        	
 			}

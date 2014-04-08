@@ -37,6 +37,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -126,7 +127,6 @@ public class ClimbActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	ArrayList<Node> routeToDisplay;
-	private Route routeToSave;
 	
     @Override
     /**
@@ -175,14 +175,15 @@ public class ClimbActivity extends Activity {
 						{
 							n.setColor(rgbEquiv[currColor]);
 							n.setIcon(holdIcons[currColor]);
-							illuminateNode(n);
 						}
 						
 						else
 						{
-							n.setColor("000000");
+							n.setColor("0 0 0");
 							n.setIcon(R.drawable.gray_hold);
+							
 						}
+						illuminateNode(n);
 				}
 			});
         	mainRelativeLayout.addView(node);
@@ -243,16 +244,6 @@ public class ClimbActivity extends Activity {
 				
 	        case R.id.action_save:
 	        	int count = 0;
-	        	for(int i = 0 ; i < nodes.size() ; i++)
-	        	{
-	        		if(nodes.get(i).isChecked())
-		        	{
-		        		Node currNode = nodes.get(i);
-		        		currNode.setIcon(nodes.get(i).getIcon());
-		        		route.addNode(currNode);
-	        		}
-	        		else count++;
-	        	}
 	        	
 	        	if(count>0)
 	        	{
@@ -290,7 +281,6 @@ public class ClimbActivity extends Activity {
 					        	}
 					        
 						        	//Wall.saveRoute(route);
-						        	routeToSave = route;
 						        	sendMessage("saveRoute\n" +route.getName());
 						        	routeNameDialog.hide();
 					        	
@@ -332,6 +322,12 @@ public class ClimbActivity extends Activity {
 	        	{
 	        		nodes.get(i).turnOff();
 	        	}
+	        	Node s = new Node(getApplicationContext(), null);
+	        	s.setAddress("0");
+	        	s.setColor("0 0 0");
+	        	illuminateNode(s);
+	        	SystemClock.sleep(100);
+	        	illuminateNode(s);
 	        	break;
         }
         
@@ -376,7 +372,7 @@ public class ClimbActivity extends Activity {
 				{	
 					nodes.get(i).turnOn();
 					nodes.get(i).setIcon(routeToLoad.getNodes().get(j).getIcon());
-					illuminateRoute(routeToLoad);
+					
 					
 					break;
 				}
@@ -388,6 +384,7 @@ public class ClimbActivity extends Activity {
 			}
 		
 		}
+		illuminateRoute(routeToLoad);
 		routeListDialog.hide();
     }
 	
@@ -557,16 +554,19 @@ public class ClimbActivity extends Activity {
 	                byte[] writeBuf = (byte[]) msg.obj;
 	                // construct a string from the buffer
 	                String writeMessage = new String(writeBuf);
+	                Log.d(TAG, "Writting: " + writeMessage);
+
 	                break;
 	                
 	            case MESSAGE_READ:
 	                byte[] readBuf = (byte[]) msg.obj;
 	                // construct a string from the valid bytes in the buffer
 	                readMessage = new String(readBuf, 0, msg.arg1);
+	                Log.d(TAG, "Received: " + readMessage);
 	                
 	                if(readMessage.contains("saveRoute"))
 	                {
-	                	saveRoute(routeToSave);
+	                	saveRoute(route);
 	                }
 	                
 	                //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
@@ -638,14 +638,12 @@ public class ClimbActivity extends Activity {
     
     private void illuminateNode(Node n)
     {
-    	String [] rgbColors = rgbEquiv[currColor].split(" ");
-    	sendMessage (ILLUMINATE_NODE + "\n" + n.getAddress()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2]);
+    	sendMessage (ILLUMINATE_NODE + "\n" + n.getAddress()+ " " + n.getColor());
     }
 
     private void illuminateRoute(Route r)
     {
-    	String [] rgbColors = rgbEquiv[currColor].split(" ");
-    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getID()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
+    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getID()+ " " + rgbEquiv[currColor] );
     }
     
     private void deleteRoute (Route r)
@@ -658,6 +656,13 @@ public class ClimbActivity extends Activity {
     	{
     		Wall.saveRoute(r);
         	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
+        	ArrayList<Node> route = r.getNodes();
+        	String addresses = "";
+        	for (int i = 0; i<route.size(); i++ ){
+        		addresses+= route.get(i).getAddress() + " ";
+        		
+        	}
+        	sendMessage(addresses);
     	}
     	else if (readMessage.contains("no"))
     	{
@@ -665,5 +670,6 @@ public class ClimbActivity extends Activity {
     		
     	}
     }
+    
 
 }

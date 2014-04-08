@@ -74,6 +74,8 @@ public class ConfigurationActivity extends Activity {
     
     //store incoming bluetooth message
     public String readMessage;
+    public String origMessage;
+    public String messageToSend;
     
     //counter of configured nodes
     public int nodesConfigured = 0;
@@ -191,6 +193,7 @@ public class ConfigurationActivity extends Activity {
                     			currNode.setAddress(addressToAssign);
                     			//currNode.setIcon(R.drawable.green_hold);
         			        	//assignedNodes.push(currNode);
+                    			Wall.mapNode(currNode);
         			        	nodesConfigured++;
         			        	undoButton.setEnabled(true);
         			        	readMessage = null;
@@ -305,7 +308,7 @@ public class ConfigurationActivity extends Activity {
 	        	if(assignedNodes.isEmpty() || previousNode == null){
 	        		undoButton.setEnabled(false);
 	        	}
-	        	sendMessage("undo \n" + previouslyAssignedAddress);
+	        	sendMessage("undo");
 			break;
 			case R.id.action_climb:
 				//Intent i=new Intent(context, ClimbActivity.class);
@@ -409,6 +412,7 @@ public class ConfigurationActivity extends Activity {
      */
     public void sendMessage(String message) 
     {
+    	readMessage = null;
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothConnection.STATE_CONNECTED)
         {
@@ -486,13 +490,17 @@ public class ConfigurationActivity extends Activity {
                 break;
                 
             case MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                readMessage = new String(readBuf, 0, msg.arg1);
-                //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
-                mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-                Log.d(TAG, "Received: " + readMessage);
-                handleHubMessage(readMessage);
+            	byte[] readBuf = (byte[]) msg.obj;
+            	origMessage = new String(readBuf, 0, msg.arg1);
+           	    SystemClock.sleep(500);
+           	    if (readMessage == null){
+           	    	readMessage = "";
+           	    }
+           	    readMessage = readMessage + origMessage;
+           	    if (readMessage.contains("<")){
+           	    	Log.d(TAG, "Received: " + readMessage);
+                    handleHubMessage(readMessage);
+           	    }
                 break;
                 
             case MESSAGE_DEVICE_NAME:
@@ -554,12 +562,12 @@ public class ConfigurationActivity extends Activity {
         	undoButton.setEnabled(true);
     	}
     	if (message.contains("setXY")){
-    		if(message.contains("yes")){
-    			if(nodesConfigured < Wall.getNumNodes()){
-    	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.green_hold);
-    				assignedNodes.push(currentNode);
-    				previousNode = currentNode;
-    				currentNode = null;
+    		if(message.contains("ye")){
+	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.green_hold);
+				assignedNodes.push(currentNode);
+				previousNode = currentNode;
+				currentNode = null;
+    			if(nodesConfigured < Wall.getNumNodes()){;
         			sendMessage("nextAddress");
 
     			}else{

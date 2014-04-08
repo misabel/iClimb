@@ -68,6 +68,7 @@ public class SplashScreen extends Activity {
     //store incoming bluetooth message
     public String readMessage;
     private String messageToSend;
+    private String origMessage;
     
     //Wall information 
     public String wallName;
@@ -365,10 +366,17 @@ public class SplashScreen extends Activity {
             case MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
-                readMessage = new String(readBuf, 0, msg.arg1);
-           	    SystemClock.sleep(500);            
-                Log.d(TAG, "Received: " + readMessage);
-                bluetoothMessgeHandler(readMessage);
+                origMessage = new String(readBuf, 0, msg.arg1);
+           	    SystemClock.sleep(500);
+           	    if (readMessage == null){
+           	    	readMessage = "";
+           	    }
+           	    readMessage = readMessage + origMessage;
+           	    if (readMessage.contains("<")){
+           	    	Log.d(TAG, "Received: " + readMessage);
+                    bluetoothMessgeHandler(readMessage);
+           	    }
+
                 break;
             case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
@@ -464,8 +472,8 @@ public class SplashScreen extends Activity {
     	
     	if (btMessage.contains(M_WALL_NAME))
     	{
-    		String[] name = readMessage.split(":");
-        	wallName = name[name.length-1];
+    		String[] name = readMessage.split("\n");
+        	wallName = name[name.length-2];
             Log.d(TAG, "WALL NAME SET TO:" + wallName);
         	readMessage = null;
         	conversation_state = NUM_NODES;
@@ -475,7 +483,7 @@ public class SplashScreen extends Activity {
     	if (btMessage.contains(M_NUM_NODES))
     	{
         	String[] nodes = readMessage.split("\\r?\\n");
-        	numNodes = Integer.parseInt(nodes[nodes.length-1]);
+        	numNodes = Integer.parseInt(nodes[nodes.length-2]);
             Log.d(TAG, "num nodes set to: " + numNodes);
         	Wall.setNumNodes(numNodes);
         	//if the wall is configured initiallize the NEXTNODE conversation to receive nodes
@@ -521,6 +529,7 @@ public class SplashScreen extends Activity {
     		temp.setY(Float.parseFloat(nodeParts[2]));
             Log.d(TAG, "Node set to: " + temp.getAddress()+" , " + temp.getX() +" , " + temp.getY());
     		nodes.add(temp);
+    		Wall.mapNode(temp);
     		readMessage = null;    		
     		if (nodeCount < numNodes-1)
     		{
@@ -539,7 +548,7 @@ public class SplashScreen extends Activity {
     	if (btMessage.contains(M_NUM_ROUTES))
     	{
     		String[] routes = readMessage.split("\n");
-        	numRoutes = Integer.parseInt(routes[routes.length-1]);
+        	numRoutes = Integer.parseInt(routes[routes.length-2]);
             Log.d(TAG, "num routes set to: " + numRoutes);
         	Wall.setNumRoutes(numRoutes); 
     		if (numRoutes > 0)
@@ -607,6 +616,7 @@ public class SplashScreen extends Activity {
     	if (messageToSend != null)
     	{
        	    SystemClock.sleep(200);
+       	    readMessage = null;
         	sendMessage(messageToSend);
             Log.d(TAG, "message sent: " + messageToSend);
     	}else{
