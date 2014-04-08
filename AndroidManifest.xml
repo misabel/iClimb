@@ -44,13 +44,11 @@
         <activity
             android:name="com.example.android.iClimb.DeviceListActivity"
             android:configChanges="orientation|keyboardHidden"
-<<<<<<< HEAD
-            android:label="@string/select_device"  />
-=======
-            android:label="@string/select_device" 
+            android:label="@string/select_device"
             android:theme="@android:style/Theme.Dialog"/>
->>>>>>> 6bdbb8ad17d35b818b7c8d98e2402c422f2843bb
-        
+          
+
+      
          <activity
             android:name="com.example.android.iClimb.SetupActivity"
             android:configChanges="orientation|keyboardHidden"

@@ -30,11 +30,13 @@ public class Route
 		nodes.add(n);
 	}
 
-	public void setID(String routeID) {
+	public void setID(String routeID) 
+	{
 		id = routeID;
 	}
 
-	public String getid() {
+	public String getID()
+	{
 		return id;
 	}
 	

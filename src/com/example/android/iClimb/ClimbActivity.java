@@ -114,7 +114,6 @@ public class ClimbActivity extends Activity {
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the chat services
     private BluetoothConnection mChatService = null;
-    private SplashScreen splashService = null;
     
     RelativeLayout mainRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
@@ -218,117 +217,123 @@ public class ClimbActivity extends Activity {
     /*
      * This method is called when one of the options on the Action Bar is selected
      */
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) 
+    {
         Intent serverIntent = null;
-        switch (item.getItemId()) {
-        case R.id.secure_connect_scan:
-            // Launch the DeviceListActivity to see devices and do scan
-            serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-            return true;
-        case R.id.discoverable:
-            // Ensure this device is discoverable by others
-            ensureDiscoverable();
-            return true;
-        case R.id.color_select: // Button that goes through all the colors that user can select
-			currColor++;
-			if( currColor > 6 ) {
-				currColor = 0;
-			} // end IF
-			drawButton.setIcon(colorIcons[currColor]);
-			Toast.makeText(this, diffColors[currColor] + " selected!", Toast.LENGTH_SHORT).show();
-			
-			break;
-			
-        case R.id.action_save:
-        	int count = 0;
-        	for(int i = 0 ; i < nodes.size() ; i++)
-        	{
-        		if(nodes.get(i).isChecked())
+        switch (item.getItemId())
+        {
+	        case R.id.secure_connect_scan:
+	            // Launch the DeviceListActivity to see devices and do scan
+	            serverIntent = new Intent(this, DeviceListActivity.class);
+	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+	            return true;
+	        case R.id.discoverable:
+	            // Ensure this device is discoverable by others
+	            ensureDiscoverable();
+	            return true;
+	        case R.id.color_select: // Button that goes through all the colors that user can select
+				currColor++;
+				if( currColor > 6 ) 
+				{
+					currColor = 0;
+				} // end IF
+				drawButton.setIcon(colorIcons[currColor]);
+				Toast.makeText(this, diffColors[currColor] + " selected!", Toast.LENGTH_SHORT).show();
+				
+				break;
+				
+	        case R.id.action_save:
+	        	int count = 0;
+	        	for(int i = 0 ; i < nodes.size() ; i++)
 	        	{
-	        		Node currNode = nodes.get(i);
-	        		currNode.setIcon(nodes.get(i).getIcon());
-	        		route.addNode(currNode);
-        		}
-        		else count++;
-        	}
-        	
-        	if(count>0)
-        	{
-        		AlertDialog.Builder warning =  new AlertDialog.Builder(cmain);
-            	warning.setTitle("No holds are selected to be saved.");
-            	warning.setIcon(R.drawable.ic_no_routes);
-            	warning.setPositiveButton("OK", null);
-            	warning.show();
-        	}
-        	
-        	else
-	        {
-		        	routeNameDialog = new Dialog(this);
-		        	routeNameDialog.setContentView(R.layout.route_name_window);
-		        	routeNameDialog.setTitle("Name Your Route");
-		        	Button okButton = (Button)routeNameDialog.findViewById(R.id.ok_button);
-		            routeNameField = (EditText)routeNameDialog.findViewById(R.id.route_name_tf);
-		
-		        	okButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View arg0) {
+	        		if(nodes.get(i).isChecked())
+		        	{
+		        		Node currNode = nodes.get(i);
+		        		currNode.setIcon(nodes.get(i).getIcon());
+		        		route.addNode(currNode);
+	        		}
+	        		else count++;
+	        	}
+	        	
+	        	if(count>0)
+	        	{
+	        		AlertDialog.Builder warning =  new AlertDialog.Builder(cmain);
+	            	warning.setTitle("No holds are selected to be saved.");
+	            	warning.setIcon(R.drawable.ic_no_routes);
+	            	warning.setPositiveButton("OK", null);
+	            	warning.show();
+	        	}
+	        	
+	        	else
+		        {
+			        	routeNameDialog = new Dialog(this);
+			        	routeNameDialog.setContentView(R.layout.route_name_window);
+			        	routeNameDialog.setTitle("Name Your Route");
+			        	Button okButton = (Button)routeNameDialog.findViewById(R.id.ok_button);
+			            routeNameField = (EditText)routeNameDialog.findViewById(R.id.route_name_tf);
+			
+			        	okButton.setOnClickListener(new OnClickListener()
+			        	{
 							
-							route = new Route(routeNameField.getText ().toString());
-				        	for(int i = 0 ; i < nodes.size() ; i++)
-				        	{
-				        		if(nodes.get(i).isChecked())
-					        	{ 
-					        		Node currNode = nodes.get(i);
-					        		currNode.setIcon(nodes.get(i).getIcon());
-					        		route.addNode(currNode);
-				        		}
-				        	}
-				        
-					        	//Wall.saveRoute(route);
-					        	routeToSave = route;
-					        	sendMessage("saveRoute\n" +route.getName());
-					        	routeNameDialog.hide();
-				        	
-						}
-					});
+							@Override
+							public void onClick(View arg0)
+							{
+								
+								route = new Route(routeNameField.getText ().toString());
+					        	for(int i = 0 ; i < nodes.size() ; i++)
+					        	{
+					        		if(nodes.get(i).isChecked())
+						        	{ 
+						        		Node currNode = nodes.get(i);
+						        		currNode.setIcon(nodes.get(i).getIcon());
+						        		route.addNode(currNode);
+					        		}
+					        	}
+					        
+						        	//Wall.saveRoute(route);
+						        	routeToSave = route;
+						        	sendMessage("saveRoute\n" +route.getName());
+						        	routeNameDialog.hide();
+					        	
+							}
+						});
+			        	
+			        	routeNameDialog.show();
+	        	}
+	        	break;
+	        	
+	        case R.id.action_load:
+	        	
+	        	if(Wall.getRoutes().size()==0)
+	        	{
+	
+	            	AlertDialog.Builder warning =  new AlertDialog.Builder(this);
+	            	warning.setTitle("No routes are currently saved.");
+	            	warning.setIcon(R.drawable.ic_no_routes);
+	            	warning.setPositiveButton("OK", null);
+	            	warning.show();
+	        	}
+	        	
+	        	else
+		        {
+		        	routeListDialog = new Dialog(this);
 		        	
-		        	routeNameDialog.show();
-        	}
-        	break;
-        	
-        case R.id.action_load:
-        	
-        	if(Wall.getRoutes().size()==0)
-        	{
-
-            	AlertDialog.Builder warning =  new AlertDialog.Builder(this);
-            	warning.setTitle("No routes are currently saved.");
-            	warning.setIcon(R.drawable.ic_no_routes);
-            	warning.setPositiveButton("OK", null);
-            	warning.show();
-        	}
-        	else
-	        {
-	        	routeListDialog = new Dialog(this);
-	        	
-	        	routeListDialog.setContentView(R.layout.route_list);
-	        	adapter = new RouteListAdapter(this, R.layout.route_item, Wall.getRoutes());
-	        	ListView routeList = (ListView)routeListDialog.findViewById(R.id.route_list);
-	        	routeList.setAdapter(adapter);
-	        	
-	        	routeListDialog.setTitle("Saved Routes");
-	        	routeListDialog.show();
-        	}
-        break;
-        
-        case R.id.turn_off:
-        	for(int i = 0; i< nodes.size(); i++)
-        	{
-        		nodes.get(i).turnOff();
-        	}
-        	break;
+		        	routeListDialog.setContentView(R.layout.route_list);
+		        	adapter = new RouteListAdapter(this, R.layout.route_item, Wall.getRoutes());
+		        	ListView routeList = (ListView)routeListDialog.findViewById(R.id.route_list);
+		        	routeList.setAdapter(adapter);
+		        	
+		        	routeListDialog.setTitle("Saved Routes");
+		        	routeListDialog.show();
+	        	}
+	        break;
+	        
+	        case R.id.turn_off:
+	        	for(int i = 0; i< nodes.size(); i++)
+	        	{
+	        		nodes.get(i).turnOff();
+	        	}
+	        	break;
         }
         
         return false;
@@ -341,10 +346,12 @@ public class ClimbActivity extends Activity {
     	AlertDialog.Builder warning =  new AlertDialog.Builder(this);
     	warning.setTitle("Are you sure you wish to delete \"" + routeToRemove.getName() + "\"?");
     	warning.setIcon(R.drawable.ic_delete_route);
-    	warning.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    	warning.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+    	{
 			
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog, int which) 
+			{
 				adapter.remove(routeToRemove);
 				Wall.getNodes().remove(routeToRemove);
 				deleteRoute(routeToRemove);
@@ -387,39 +394,48 @@ public class ClimbActivity extends Activity {
 	
 	
     @Override
-    public void onStart() {
+    public void onStart() 
+    {
         super.onStart();
         if(D) Log.e(TAG, "++ ON START ++");
 
         // If BT is not on, request that it be enabled.
         // setupChat() will then be called during onActivityResult
-        if (!mBluetoothAdapter.isEnabled()) {
+        if (!mBluetoothAdapter.isEnabled()) 
+        {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         // Otherwise, setup the chat session
-        } else {
+        } 
+        
+        else
+        {
             if (mChatService == null) setupChat();
         }
     }
 
     @Override
-    public synchronized void onResume() {
+    public synchronized void onResume()
+    {
         super.onResume();
         if(D) Log.e(TAG, "+ ON RESUME +");
 
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
+        if (mChatService != null) 
+        {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothConnection.STATE_NONE) {
+            if (mChatService.getState() == BluetoothConnection.STATE_NONE)
+            {
               // Start the Bluetooth chat services
               mChatService.start();
             }
         }
     }
 
-    private void setupChat() {
+    private void setupChat() 
+    {
         Log.d(TAG, "setupChat()");
 
         // Initialize the array adapter for the conversation thread
@@ -434,19 +450,22 @@ public class ClimbActivity extends Activity {
     }
 
     @Override
-    public synchronized void onPause() {
+    public synchronized void onPause()
+    {
         super.onPause();
         if(D) Log.e(TAG, "- ON PAUSE -");
     }
 
     @Override
-    public void onStop() {
+    public void onStop() 
+    {
         super.onStop();
         if(D) Log.e(TAG, "-- ON STOP --");
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
         // Stop the Bluetooth chat services
         if (mChatService != null) mChatService.stop();
@@ -454,10 +473,12 @@ public class ClimbActivity extends Activity {
     }
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-	private void ensureDiscoverable() {
+	private void ensureDiscoverable()
+    {
         if(D) Log.d(TAG, "ensure discoverable");
         if (mBluetoothAdapter.getScanMode() !=
-            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) 
+        {
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
             startActivity(discoverableIntent);
@@ -468,15 +489,18 @@ public class ClimbActivity extends Activity {
      * Sends a message.
      * @param message  A string of text to send.
      */
-    public void sendMessage(String message) {
+    public void sendMessage(String message)
+    {
         // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothConnection.STATE_CONNECTED) {
+        if (mChatService.getState() != BluetoothConnection.STATE_CONNECTED)
+        {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Check that there's actually something to send
-        if (message.length() > 0) {
+        if (message.length() > 0)
+        {
             // Get the message bytes and tell the BluetoothChatService to write
             byte[] send = message.getBytes();
             mChatService.write(send);
@@ -489,90 +513,114 @@ public class ClimbActivity extends Activity {
 
  
 
-    private final void setStatus(int resId) {
+    private final void setStatus(int resId)
+    {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(resId);
     }
 
-    private final void setStatus(CharSequence subTitle) {
+    private final void setStatus(CharSequence subTitle)
+    {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(subTitle);
     }
 
     // The Handler that gets information back from the BluetoothChatService
-    private final Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler() 
+    {
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-            case MESSAGE_STATE_CHANGE:
-                if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-                switch (msg.arg1) {
-                case BluetoothConnection.STATE_CONNECTED:
-                    setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                    break;
-                case BluetoothConnection.STATE_CONNECTING:
-                    setStatus(R.string.title_connecting);
-                    break;
-                case BluetoothConnection.STATE_LISTEN:
-                    setStatus(R.string.title_not_connected);
-                    break;
-                case BluetoothConnection.STATE_NONE:
-                    break;
-                }
-                break;
-            case MESSAGE_WRITE:
-                byte[] writeBuf = (byte[]) msg.obj;
-                // construct a string from the buffer
-                String writeMessage = new String(writeBuf);
-                break;
-            case MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                readMessage = new String(readBuf, 0, msg.arg1);
-                if(readMessage.contains("saveRoute")){
-                	saveRoute(routeToSave);
-                }
-                //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
-                //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-                break;
-            case MESSAGE_DEVICE_NAME:
-                // save the connected device's name
-                mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                Toast.makeText(getApplicationContext(), "Connected to "
-                               + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                break;
-            case MESSAGE_TOAST:
-                Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
-                               Toast.LENGTH_SHORT).show();
-                break;
+        public void handleMessage(Message msg) 
+        {
+            switch (msg.what) 
+            {
+	            case MESSAGE_STATE_CHANGE:
+	                if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+	                switch (msg.arg1) 
+	                {
+		                case BluetoothConnection.STATE_CONNECTED:
+		                    setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+		                    break;
+		                    
+		                case BluetoothConnection.STATE_CONNECTING:
+		                    setStatus(R.string.title_connecting);
+		                    break;
+		                    
+		                case BluetoothConnection.STATE_LISTEN:
+		                    setStatus(R.string.title_not_connected);
+		                    break;
+		                    
+		                case BluetoothConnection.STATE_NONE:
+		                    break;
+	                }
+	                break;
+	                
+	            case MESSAGE_WRITE:
+	                byte[] writeBuf = (byte[]) msg.obj;
+	                // construct a string from the buffer
+	                String writeMessage = new String(writeBuf);
+	                break;
+	                
+	            case MESSAGE_READ:
+	                byte[] readBuf = (byte[]) msg.obj;
+	                // construct a string from the valid bytes in the buffer
+	                readMessage = new String(readBuf, 0, msg.arg1);
+	                
+	                if(readMessage.contains("saveRoute"))
+	                {
+	                	saveRoute(routeToSave);
+	                }
+	                
+	                //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
+	                //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+	                break;
+	                
+	            case MESSAGE_DEVICE_NAME:
+	                // save the connected device's name
+	                mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+	                Toast.makeText(getApplicationContext(), "Connected to "
+	                               + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+	                break;
+	                
+	            case MESSAGE_TOAST:
+	                Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+	                               Toast.LENGTH_SHORT).show();
+	                break;
             }
         }
     };
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
-        switch (requestCode) {
-        case REQUEST_CONNECT_DEVICE_SECURE:
-            // When DeviceListActivity returns with a device to connect
-            if (resultCode == Activity.RESULT_OK) {
-                connectDevice(data, true);
-            }
-            break;
-        case REQUEST_ENABLE_BT:
-            // When the request to enable Bluetooth returns
-            if (resultCode == Activity.RESULT_OK) {
-                // Bluetooth is now enabled, so set up a chat session
-                setupChat();
-            } else {
-                // User did not enable Bluetooth or an error occurred
-                Log.d(TAG, "BT not enabled");
-                Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
-                finish();
-            }
+        switch (requestCode)
+        {
+	        case REQUEST_CONNECT_DEVICE_SECURE:
+	            // When DeviceListActivity returns with a device to connect
+	            if (resultCode == Activity.RESULT_OK) 
+	            {
+	                connectDevice(data, true);
+	            }
+	            break;
+	        case REQUEST_ENABLE_BT:
+	            // When the request to enable Bluetooth returns
+	            if (resultCode == Activity.RESULT_OK)
+	            {
+	                // Bluetooth is now enabled, so set up a chat session
+	                setupChat();
+	            } 
+	            
+	            else
+	            {
+	                // User did not enable Bluetooth or an error occurred
+	                Log.d(TAG, "BT not enabled");
+	                Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+	                finish();
+	            }
         }
     }
 
-    private void connectDevice(Intent data, boolean secure) {
+    private void connectDevice(Intent data, boolean secure) 
+    {
         // Get the device MAC address
         String address = data.getExtras()
             .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
@@ -589,26 +637,31 @@ public class ClimbActivity extends Activity {
     public static final String SAVE_ROUTE = "saveRoute";
     public static final String DELETE_ROUTE = "deleteRoute";*/
     
-    private void illuminateNode(Node n){
+    private void illuminateNode(Node n)
+    {
     	String [] rgbColors = rgbEquiv[currColor].split(" ");
     	sendMessage (ILLUMINATE_NODE + "\n" + n.getAddress()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2]);
     }
 
-    private void illuminateRoute(Route r){
+    private void illuminateRoute(Route r)
+    {
     	String [] rgbColors = rgbEquiv[currColor].split(" ");
-    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getid()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
+    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getID()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
     }
     
-    private void deleteRoute (Route r){
-    	sendMessage(DELETE_ROUTE + "\n" + r.getid());
+    private void deleteRoute (Route r)
+    {
+    	sendMessage(DELETE_ROUTE + "\n" + r.getID());
     }
     
     private void saveRoute (Route r){
-    	if (readMessage.contains("yes")){
+    	if (readMessage.contains("yes"))
+    	{
     		Wall.saveRoute(r);
         	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
     	}
-    	else if (readMessage.contains("no")){
+    	else if (readMessage.contains("no"))
+    	{
         	Toast.makeText(cmain, "Unable to save Path", Toast.LENGTH_SHORT).show();
     		
     	}
