@@ -95,7 +95,6 @@ public class ClimbActivity extends Activity {
     //store incoming bluetooth message
     public String readMessage;
 
-
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";

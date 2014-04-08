@@ -600,6 +600,7 @@ public class SplashScreen extends Activity {
     	
     	if (btMessage.contains(M_RESEND))
     	{
+    		SystemClock.sleep(1000);
     		messageToSend = bluetoothConversation (conversation_state);
     	}
     	
@@ -608,6 +609,9 @@ public class SplashScreen extends Activity {
        	    SystemClock.sleep(200);
         	sendMessage(messageToSend);
             Log.d(TAG, "message sent: " + messageToSend);
+    	}else{
+    		//SystemClock.sleep(1000);
+    		messageToSend = bluetoothConversation (conversation_state);
     	}
 
     	

@@ -48,7 +48,7 @@
             android:theme="@android:style/Theme.Dialog"/>
           
 
-      
+
          <activity
             android:name="com.example.android.iClimb.SetupActivity"
             android:configChanges="orientation|keyboardHidden"

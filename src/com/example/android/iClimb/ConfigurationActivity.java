@@ -18,6 +18,7 @@ package com.example.android.iClimb;
 
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import com.example.android.BluetoothChat.R;
 
@@ -36,6 +37,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -103,6 +105,8 @@ public class ConfigurationActivity extends Activity {
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
+	private Node currentNode; // Most current node assigned
+	private Node previousNode; // Last Assigned node
 	
 	private String addressToAssign = null;
 	private String previouslyAssignedAddress = null;
@@ -112,6 +116,8 @@ public class ConfigurationActivity extends Activity {
 	MenuItem undoButton;
 	MenuItem climbButton;
 
+	//Stack of assigned addresses
+	private Stack assignedNodes = new Stack();
 	
     @SuppressWarnings("deprecation")
 	@Override
@@ -152,12 +158,10 @@ public class ConfigurationActivity extends Activity {
      * the current address to the touched node and sending a message to the hub requesting the next address be sent.
      * */
     Node currNode;
+    
     private void setnodes()
     {
     	
-      //  ArrayList<Node> refNodes =new ArrayList<Node>();
-        //refNodes.addAll(Wall.getNodes().values());
-        //ArrayList<Node> refNodes = Wall.getNodes();
     	ArrayList<Node> refNodes = Wall.getNodes();
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
@@ -171,6 +175,7 @@ public class ConfigurationActivity extends Activity {
                 {
                     int action = event.getAction();
                     currNode = (Node) v;
+                    currNode.setIcon(R.drawable.red_hold);
                     //if node selected
                     if (action == MotionEvent.ACTION_DOWN ) 
                     {
@@ -184,10 +189,13 @@ public class ConfigurationActivity extends Activity {
                     		if (currNode.getAddress() == null)
                     		{
                     			currNode.setAddress(addressToAssign);
+                    			//currNode.setIcon(R.drawable.green_hold);
         			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
+        			        	//assignedNodes.push(currNode);
         			        	nodesConfigured++;
         			        	undoButton.setEnabled(true);
         			        	readMessage = null;
+        			        	currentNode = currNode;
         			        	previouslyAssignedAddress = addressToAssign;
         			        	addressToAssign = null;
                     		}
@@ -207,8 +215,12 @@ public class ConfigurationActivity extends Activity {
                     						public void onClick(DialogInterface dialog,int id) {
                     							//Yes Button Clicked
                                     			currNode.setAddress(addressToAssign);
+                                    			currNode.setIcon(R.drawable.red_hold);
+                                    			SystemClock.sleep(1000);
+                                    			currNode.setIcon(R.drawable.green_hold);
                                     			Wall.mapNode(currNode);
                         			        	sendMessage("setXY\n" + node.getX() +" "+ node.getY());
+                        			        	currentNode = currNode;
                         			        	nodesConfigured++;
                         			        	undoButton.setEnabled(true);
                         			        	readMessage = null;
@@ -278,10 +290,20 @@ public class ConfigurationActivity extends Activity {
 	            ensureDiscoverable();
 	            return true;
 	        case R.id.action_undo:
-	        	undoButton.setEnabled(false);
+	        	//undoButton.setEnabled(false);
+	        	Wall.getMappedNode(currentNode.getAddress()).setIcon(R.drawable.red_hold);
 	        	nodesConfigured--;
+	        	currentNode = previousNode;
+	        	assignedNodes.pop();
+	        	Node temp = (Node)assignedNodes.pop();
+	        	previousNode = (Node)assignedNodes.peek();
+	        	assignedNodes.push(currentNode);
 	        	addressToAssign = previouslyAssignedAddress;
-	        	//node = Wall.getMappedNode(addressToAssign);
+	        	previouslyAssignedAddress = previousNode.getAddress();
+	        	
+	        	if(assignedNodes.isEmpty() || previousNode == null){
+	        		undoButton.setEnabled(false);
+	        	}
 	        	sendMessage("undo \n" + previouslyAssignedAddress);
 			break;
 			case R.id.action_climb:
@@ -533,6 +555,10 @@ public class ConfigurationActivity extends Activity {
     	if (message.contains("setXY")){
     		if(message.contains("yes")){
     			if(nodesConfigured < Wall.getNumNodes()){
+    	        	Wall.getMappedNode(currentNode.getAddress()).setIcon(R.drawable.green_hold);
+    				assignedNodes.push(currentNode);
+    				previousNode = currentNode;
+    				currentNode = null;
         			sendMessage("nextAddress");
 
     			}else{
