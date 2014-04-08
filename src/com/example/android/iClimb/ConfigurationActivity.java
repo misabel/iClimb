@@ -107,11 +107,7 @@ public class ConfigurationActivity extends Activity {
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
-	private Node currentNode; // Most current node assigned
-	private Node previousNode; // Last Assigned node
-	
 	private String addressToAssign = null;
-	private String previouslyAssignedAddress = null;
 	
 	//menu buttons
 	MenuItem configButton;
@@ -197,14 +193,9 @@ public class ConfigurationActivity extends Activity {
                     		if (currNode.getAddress() == null)
                     		{
                     			currNode.setAddress(addressToAssign);
-                    			//currNode.setIcon(R.drawable.green_hold);
-        			        	//assignedNodes.push(currNode);
                     			Wall.mapNode(currNode);
-        			        	nodesConfigured++;
         			        	undoButton.setEnabled(true);
         			        	readMessage = null;
-        			        	currentNode = currNode;
-        			        	previouslyAssignedAddress = addressToAssign;
         			        	addressToAssign = null;
         			        	sendMessage("setXY\n" + currNode.getX() +" "+ currNode.getY());
 
@@ -229,12 +220,9 @@ public class ConfigurationActivity extends Activity {
                                     			SystemClock.sleep(1000);
                                     			currNode.setIcon(R.drawable.green_hold);
                                     			Wall.mapNode(currNode);
-                        			        	currentNode = currNode;
                         			        	sendMessage("setXY\n" + currNode.getX() +" "+ currNode.getY());
-                        			        	nodesConfigured++;
                         			        	undoButton.setEnabled(true);
                         			        	readMessage = null;
-                        			        	previouslyAssignedAddress = addressToAssign;
                         			        	addressToAssign = null;
                     						}
                     					  })
@@ -300,18 +288,10 @@ public class ConfigurationActivity extends Activity {
 	            ensureDiscoverable();
 	            return true;
 	        case R.id.action_undo:
-	        	//undoButton.setEnabled(false);
 	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.red_hold);
 	        	nodesConfigured--;
-	        	currentNode = previousNode;
 	        	assignedNodes.pop();
-	        	Node temp = (Node)assignedNodes.pop();
-	        	previousNode = (Node)assignedNodes.peek();
-	        	assignedNodes.push(currentNode);
-	        	addressToAssign = previouslyAssignedAddress;
-	        	previouslyAssignedAddress = previousNode.getAddress();
-	        	
-	        	if(assignedNodes.isEmpty() || previousNode == null){
+	        	if(assignedNodes.isEmpty() ){
 	        		undoButton.setEnabled(false);
 	        	}
 	        	sendMessage("undo");
@@ -570,14 +550,13 @@ public class ConfigurationActivity extends Activity {
         	String[] nodeAddress = readMessage.split("\\r?\\n");
         	addressToAssign = null;
         	addressToAssign = nodeAddress[nodeAddress.length-1];
-        	undoButton.setEnabled(true);
     	}
     	if (message.contains("setXY")){
     		if(message.contains("yes")){
 	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.green_hold);
-				assignedNodes.push(currentNode);
-				previousNode = currentNode;
-				currentNode = null;
+				assignedNodes.push(currNode);
+	        	nodesConfigured++;
+				
     			if(nodesConfigured < Wall.getNumNodes()){;
         			sendMessage("nextAddress");
 
