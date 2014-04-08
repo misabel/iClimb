@@ -292,7 +292,7 @@ public class ConfigurationActivity extends Activity {
 	            return true;
 	        case R.id.action_undo:
 	        	//undoButton.setEnabled(false);
-	        	Wall.getMappedNode(currentNode.getAddress()).setIcon(R.drawable.red_hold);
+	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.red_hold);
 	        	nodesConfigured--;
 	        	currentNode = previousNode;
 	        	assignedNodes.pop();
@@ -556,7 +556,7 @@ public class ConfigurationActivity extends Activity {
     	if (message.contains("setXY")){
     		if(message.contains("yes")){
     			if(nodesConfigured < Wall.getNumNodes()){
-    	        	Wall.getMappedNode(previouslyAssignedAddress).setIcon(R.drawable.green_hold);
+    	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.green_hold);
     				assignedNodes.push(currentNode);
     				previousNode = currentNode;
     				currentNode = null;
