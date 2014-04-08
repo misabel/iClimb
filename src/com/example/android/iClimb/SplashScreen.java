@@ -569,7 +569,7 @@ public class SplashScreen extends Activity {
         		temp = new Node (this, tn);
         		temp.setAddress((routeNodes[i]));
         		route.addNode(temp);
-                Log.d(TAG, "added Node" + temp.getAddress()+" to route " + route.getid() +"  named  " + route.getName());
+                Log.d(TAG, "added Node" + temp.getAddress()+" to route " + route.getID() +"  named  " + route.getName());
         	}
         	
         	Wall.saveRoute(route);
@@ -600,6 +600,7 @@ public class SplashScreen extends Activity {
     	
     	if (btMessage.contains(M_RESEND))
     	{
+    		SystemClock.sleep(1000);
     		messageToSend = bluetoothConversation (conversation_state);
     	}
     	
@@ -608,6 +609,9 @@ public class SplashScreen extends Activity {
        	    SystemClock.sleep(200);
         	sendMessage(messageToSend);
             Log.d(TAG, "message sent: " + messageToSend);
+    	}else{
+    		//SystemClock.sleep(1000);
+    		messageToSend = bluetoothConversation (conversation_state);
     	}
 
     	

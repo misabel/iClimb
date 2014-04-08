@@ -596,16 +596,27 @@ public class ClimbActivity extends Activity {
 
     private void illuminateRoute(Route r){
     	String [] rgbColors = rgbEquiv[currColor].split(" ");
-    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getid()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
+    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getID()+ " " + rgbColors[0] + " " + rgbColors[1]+ " " + rgbColors[2] );
     }
     
     private void deleteRoute (Route r){
-    	sendMessage(DELETE_ROUTE + "\n" + r.getid());
+    	sendMessage(DELETE_ROUTE + "\n" + r.getID());
     }
     
     private void saveRoute (Route r){
     	if (readMessage.contains("yes")){
+    		String [] parts = readMessage.split("\\r?\\n");
+    		String routeAddresses = "";
+    		r.setID(parts[parts.length-1]);
     		Wall.saveRoute(r);
+    		
+    		ArrayList<Node> refNodes = r.getNodes();
+            for(int i = 0 ; i < refNodes.size() ; i++)
+            {
+            	routeAddresses+= " " + (refNodes.get(i).getAddress());
+            }
+            sendMessage(routeAddresses);
+    		
         	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
     	}
     	else if (readMessage.contains("no")){

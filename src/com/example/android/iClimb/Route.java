@@ -34,7 +34,7 @@ public class Route
 		id = routeID;
 	}
 
-	public String getid() {
+	public String getID() {
 		return id;
 	}
 	
