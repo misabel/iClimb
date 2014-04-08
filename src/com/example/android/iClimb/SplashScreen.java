@@ -96,6 +96,8 @@ public class SplashScreen extends Activity {
     public static final String M_START_CLIMB = "fun";
     public static final String M_RESEND = "resend";
     
+    
+    
     //state of conversation
     public int conversation_state = 0;
 
@@ -132,7 +134,7 @@ public class SplashScreen extends Activity {
 	int status;
 	SplashScreen cmain = this;
 	StringBuilder sBuilder;
-	private static final String TAG = "z";
+	private static final String TAG = "Splash Screen";
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
@@ -670,5 +672,6 @@ public class SplashScreen extends Activity {
         }
     	return message;
     }
+
 
 }

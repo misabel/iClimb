@@ -103,7 +103,7 @@ public class ConfigurationActivity extends Activity {
     RelativeLayout configRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
 
-	private static final String TAG = "z";
+	private static final String TAG = "Configuration Activity";
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
@@ -119,7 +119,7 @@ public class ConfigurationActivity extends Activity {
 	MenuItem climbButton;
 
 	//Stack of assigned addresses
-	private Stack assignedNodes = new Stack();
+	private Stack<Node> assignedNodes = new Stack<Node>();
 	
     @SuppressWarnings("deprecation")
 	@Override
@@ -152,6 +152,12 @@ public class ConfigurationActivity extends Activity {
         }        
         
         setnodes();
+        
+        
+        Log.d(TAG, "Attempting connection");
+        //BluetoothDevice device = mBluetoothAdapter.getRemoteDevice("00:06:66:67:57:D7");
+        if (mChatService == null) setupChat();
+        mChatService.connect(Wall.getData(), true);
        
     }
     
@@ -562,7 +568,7 @@ public class ConfigurationActivity extends Activity {
         	undoButton.setEnabled(true);
     	}
     	if (message.contains("setXY")){
-    		if(message.contains("ye")){
+    		if(message.contains("yes")){
 	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.green_hold);
 				assignedNodes.push(currentNode);
 				previousNode = currentNode;

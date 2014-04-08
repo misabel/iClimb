@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 import android.annotation.TargetApi;
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -40,7 +41,7 @@ import android.util.Log;
  * thread for performing data transmissions when connected.
  */
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
-public class BluetoothConnection {
+public class BluetoothConnection{
     // Debugging
     private static final String TAG = "BluetoothChatService";
     private static final boolean D = true;
@@ -140,7 +141,8 @@ public class BluetoothConnection {
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
     public synchronized void connect(BluetoothDevice device, boolean secure) {
-        if (D) Log.d(TAG, "connect to: " + device);
+    	Wall.setData(device);
+        if (D) Log.d(TAG, "Estoy aqui connect to: " + device);
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
@@ -163,6 +165,7 @@ public class BluetoothConnection {
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
+
         if (D) Log.d(TAG, "connected, Socket Type:" + socketType);
 
         // Cancel the thread that completed the connection

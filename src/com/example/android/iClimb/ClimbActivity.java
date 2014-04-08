@@ -122,7 +122,7 @@ public class ClimbActivity extends Activity {
 	ClimbActivity cmain = this;
 	StringBuilder sBuilder;
 	//DragEventListener dragListen = new DragEventListener();
-	private static final String TAG = "z";
+	private static final String TAG = "Climb Activity";
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
@@ -192,6 +192,12 @@ public class ClimbActivity extends Activity {
         	
         }
         Wall.saveNodes(nodes);
+        
+        Log.d(TAG, "Attempting connection");
+        //BluetoothDevice device = mBluetoothAdapter.getRemoteDevice("00:06:66:67:57:D7");
+        if (mChatService == null) setupChat();
+        mChatService.connect(Wall.getData(), true);
+        
     }
     
     

@@ -3,6 +3,11 @@ package com.example.android.iClimb;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.nfc.Tag;
+import android.util.Log;
+
 public class Wall 
 {
 	
@@ -13,6 +18,9 @@ public class Wall
 	private static String name;
 	public static int numNodes = 0;
 	public static int numRoutes = 0;
+	private static BluetoothDevice dataToSave;
+	private static final String TAG = "Wall";
+
 	
 	
 	public static String getName()
@@ -91,4 +99,10 @@ public class Wall
 	{
 		return numRoutes;
 	}
+    public static BluetoothDevice getData(){
+    	return dataToSave;
+    }
+    public static void setData(BluetoothDevice device){
+    	dataToSave = device;
+    }
 }
