@@ -259,11 +259,11 @@ public class ConfigurationActivity extends Activity {
                 }
 
             });
+        	
 	    	configRelativeLayout.addView(node);
         	nodes.add(node);
         }
-        
-       
+        Wall.saveNodes(nodes);
     }
     
     @Override
@@ -326,7 +326,6 @@ public class ConfigurationActivity extends Activity {
 		        finish();
 			break;
 			case R.id.action_start_config:
-				setnodes();
 				sendMessage("startConfig");
 				configButton.setEnabled(false);
 			break;
@@ -450,6 +449,10 @@ public class ConfigurationActivity extends Activity {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(subTitle);
         
+        if(((String) actionBar.getSubtitle()).contains("not connected")){
+        	mChatService.connect(Wall.getData(), true);
+        }
+        
         if (subTitle.equals(getString(R.string.title_connected_to, mConnectedDeviceName))){
         	sendMessage("setWallName\n " + Wall.getName());
             Log.d(TAG, "sent setWallName");
@@ -479,6 +482,8 @@ public class ConfigurationActivity extends Activity {
 		                    break;
 		                    
 		                case BluetoothConnection.STATE_LISTEN:
+		                	SystemClock.sleep(500);
+		                	mChatService.connect(Wall.getData(), true);
 		                    setStatus(R.string.title_not_connected);
 		                    break;
 		                    

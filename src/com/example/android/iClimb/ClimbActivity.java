@@ -42,8 +42,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -200,6 +202,46 @@ public class ClimbActivity extends Activity {
         
     }
     
+    
+    
+    
+    private void setnodes()
+    {
+    	
+    	ArrayList<Node> refNodes = Wall.getNodes();
+        for(int i = 0 ; i < refNodes.size() ; i++)
+        {
+        	Node reference = refNodes.get(i);
+        	node = new Node(this, node.getBefore(), null, reference.getX(), reference.getY());
+        	
+        	node.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+					
+						Node n = (Node)button;
+						if(isChecked)
+						{
+							n.setColor(rgbEquiv[currColor]);
+							n.setIcon(holdIcons[currColor]);
+						}
+						
+						else
+						{
+							n.setColor("0 0 0");
+							n.setIcon(R.drawable.gray_hold);
+							
+						}
+						illuminateNode(n);
+				}
+			});
+        	
+	    	mainRelativeLayout.addView(node);
+        	nodes.add(node);
+        }
+        
+       
+    }
     
     @Override
     /*
@@ -525,6 +567,10 @@ public class ClimbActivity extends Activity {
     {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(subTitle);
+        
+        if(((String) actionBar.getSubtitle()).contains("not connected")){
+        	mChatService.connect(Wall.getData(), true);
+        }
     }
 
     // The Handler that gets information back from the BluetoothChatService
@@ -548,6 +594,8 @@ public class ClimbActivity extends Activity {
 		                    break;
 		                    
 		                case BluetoothConnection.STATE_LISTEN:
+		                	SystemClock.sleep(500);
+		                	mChatService.connect(Wall.getData(), true);
 		                    setStatus(R.string.title_not_connected);
 		                    break;
 		                    
