@@ -128,7 +128,7 @@ public class ClimbActivity extends Activity {
 
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
-	ArrayList<Node> routeToDisplay;
+	private ArrayList<Node> routeToDisplay;
 	
     @Override
     /**
@@ -161,8 +161,11 @@ public class ClimbActivity extends Activity {
             finish(); 
             return;
         }
+        
+        
        
         ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getAllNodes().values());
+        Log.d(TAG, "REF NODES LENGTH IS: " + refNodes.size());
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -238,9 +241,8 @@ public class ClimbActivity extends Activity {
         	
 	    	mainRelativeLayout.addView(node);
         	nodes.add(node);
-        }
-        
-       
+        } 
+        Wall.saveNodes(nodes);
     }
     
     @Override

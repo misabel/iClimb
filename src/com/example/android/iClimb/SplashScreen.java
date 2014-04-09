@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -43,6 +44,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -139,9 +141,11 @@ public class SplashScreen extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	ArrayList<Node> routeToDisplay;
-	
+
 	ImageView loadingIcon;
 	AnimationDrawable loadingAnim;
+	
+	private TextView statusField;
     @Override
     /**
      * When page is first loaded, this method is called
@@ -154,11 +158,16 @@ public class SplashScreen extends Activity {
         splashRelativeLayout = new RelativeLayout(this);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         
+        statusField = (TextView)findViewById(R.id.status);
+        statusField.setText("Not Connected to hub");
+        statusField.setTypeface(null, Typeface.BOLD);
+        statusField.setVisibility(View.GONE);
         loadingIcon = (ImageView) findViewById(R.id.loading_hold);
         loadingIcon.setVisibility(View.GONE);
         loadingIcon.setBackgroundResource(R.anim.hold_loading);
         loadingAnim = (AnimationDrawable) loadingIcon.getBackground();
         loadingIcon.post(new Starter());
+        loadingIcon.setVisibility(View.GONE);
         
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
@@ -348,12 +357,18 @@ public class SplashScreen extends Activity {
                 case BluetoothConnection.STATE_CONNECTED:
                     setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                     mConversationArrayAdapter.clear();
+                    loadingIcon.setVisibility(View.VISIBLE);
+                    statusField.setVisibility(View.GONE);
                     break;
                 case BluetoothConnection.STATE_CONNECTING:
                     setStatus(R.string.title_connecting);
+                    loadingIcon.setVisibility(View.VISIBLE);
+                    statusField.setVisibility(View.GONE);
                     break;
                 case BluetoothConnection.STATE_LISTEN:
                     setStatus(R.string.title_not_connected);
+                    loadingIcon.setVisibility(View.GONE);
+                    statusField.setVisibility(View.VISIBLE);
                     break;
                 case BluetoothConnection.STATE_NONE:
                     break;

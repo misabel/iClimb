@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.example.android.BluetoothChat.R;
 
 import android.os.Bundle;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -45,11 +46,13 @@ public class SetupActivity extends Activity
     
     Dialog wallNameDialog;
     EditText wallNameField;
+    MenuItem configureButton;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		numNodes = 0;
+		setStatus(Integer.toString(Wall.getNumNodes()-numNodes) + " Left");
 		setupRelativeLayout = new RelativeLayout(this);
 		Resources res = getResources();
 		Drawable drawable = res.getDrawable(R.drawable.background);
@@ -65,8 +68,8 @@ public class SetupActivity extends Activity
     	wallNameDialog.setTitle("Name Your Wall");
     	Button okButton = (Button)wallNameDialog.findViewById(R.id.ok_button);
         wallNameField = (EditText)wallNameDialog.findViewById(R.id.route_name_tf);
-
-    	okButton.setOnClickListener(new OnClickListener() 
+        
+        okButton.setOnClickListener(new OnClickListener() 
     	{
 			
 			@Override
@@ -93,6 +96,10 @@ public class SetupActivity extends Activity
 		getMenuInflater().inflate(R.menu.setup, menu);
 		undoButton = menu.findItem(R.id.undo);
 		undoButton.setEnabled(false);
+		configureButton = menu.findItem(R.id.action_configure);
+		if(numNodes!= Wall.getNumNodes()){
+			configureButton.setEnabled(false);
+		}
 		return true;
 	}
 	
@@ -164,7 +171,10 @@ public class SetupActivity extends Activity
             	warning.show();
 			}
 		
-		}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+		}                     
+		
+		setStatus(Integer.toString(Wall.getNumNodes()-numNodes) + " Left");
+		if(Wall.numNodes-numNodes==0) configureButton.setEnabled(true);
 		return super.onTouchEvent(event);
 	}
 	
@@ -216,4 +226,9 @@ public class SetupActivity extends Activity
 		setupRelativeLayout.addView(tb);
 		
 	}
+	
+	 private final void setStatus(CharSequence subTitle) {
+	        final ActionBar actionBar = getActionBar();
+	        actionBar.setSubtitle(subTitle);
+	 }
 }

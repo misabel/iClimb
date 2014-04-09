@@ -166,7 +166,8 @@ public class ConfigurationActivity extends Activity {
     private void setnodes()
     {
     	
-    	ArrayList<Node> refNodes = Wall.getNodes();
+    	//ArrayList<Node> refNodes = Wall.getNodes();
+        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getAllNodes().values());
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -297,7 +298,6 @@ public class ConfigurationActivity extends Activity {
 	        	sendMessage("undo");
 			break;
 			case R.id.action_climb:
-				//Intent i=new Intent(context, ClimbActivity.class);
 				sendMessage("startClimb");
 				
 				Intent switchView = new Intent(this, ClimbActivity.class);
