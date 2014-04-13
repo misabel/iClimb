@@ -293,11 +293,14 @@ public class ConfigurationActivity extends Activity {
 	        	climbButton.setEnabled(false);
 	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.red_hold);
 	        	Wall.removeNode(Wall.getMappedNode(currNode.getAddress()));
-	        	//currNode.setAddress(null);
+	        	currNode.setAddress(null);
 	        	nodesConfigured--;
 	        	assignedNodes.pop();
+	        	//currNode = assignedNodes.peek();
 	        	if(assignedNodes.isEmpty() ){
 	        		undoButton.setEnabled(false);
+	        	}else{
+		        	currNode = assignedNodes.peek();
 	        	}
 	        	sendMessage("undo");
 			break;
@@ -544,7 +547,7 @@ public class ConfigurationActivity extends Activity {
     }
 
     private void handleHubMessage(String message){
-    	if (message.contains("set")){
+    	if (message.contains("setWallName")){
         		configButton.setEnabled(true);
     	}
     	if (message.contains("Starting configuration")){

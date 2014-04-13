@@ -130,6 +130,7 @@ public class ClimbActivity extends Activity {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private Node node;
 	private ArrayList<Node> routeToDisplay;
+	private boolean routeLoaded;
 	
     @Override
     /**
@@ -163,6 +164,7 @@ public class ClimbActivity extends Activity {
             return;
         }
         
+        routeLoaded = false;
         
        
         ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getAllNodes().values());
@@ -192,7 +194,12 @@ public class ClimbActivity extends Activity {
 							n.setIcon(R.drawable.gray_hold);
 							
 						}
-						illuminateNode(n);
+							
+						if(!routeLoaded)
+						{
+							illuminateNode(n);
+						}
+
 				}
 			});
         	mainRelativeLayout.addView(node);
@@ -227,6 +234,7 @@ public class ClimbActivity extends Activity {
     EditText routeNameField;
     Route route;
     Dialog routeNameDialog, routeListDialog;
+    
   
     RouteListAdapter adapter;
     @Override
@@ -377,7 +385,7 @@ public class ClimbActivity extends Activity {
     public void loadRoute(View v)
     {
     	Route routeToLoad = (Route)v.getTag();
-    	
+		routeLoaded = true;
 
 		for(int i = 0; i<nodes.size(); i++)
 		{
@@ -401,6 +409,7 @@ public class ClimbActivity extends Activity {
 		
 		}
 		illuminateRoute(routeToLoad);
+		
 		routeListDialog.hide();
     }
 	
@@ -596,6 +605,9 @@ public class ClimbActivity extends Activity {
 		                if(readMessage.contains("saveRoute"))
 		                {
 		                	saveRoute(route);
+		                }
+		                if(readMessage.contains("Route illuminated")){
+		                	routeLoaded = false;
 		                }
 	           	    }
 	                              

@@ -17,7 +17,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">Scale</string>
+    <string name="app_name">Rainbow Route</string>
 	<string name="title_activity_setup">Setup Wall</string>
 	<string name="title_activity_configuration">Configuration</string>
 	<string name="title_activity_climb">Let\'s Climb!</string>
