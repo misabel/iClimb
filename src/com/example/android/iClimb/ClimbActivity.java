@@ -438,7 +438,6 @@ public class ClimbActivity extends Activity {
 		routeListDialog.hide();
     }
 	
-	
     @Override
     public void onStart() 
     {
