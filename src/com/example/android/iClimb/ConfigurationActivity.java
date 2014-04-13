@@ -289,6 +289,7 @@ public class ConfigurationActivity extends Activity {
 	            ensureDiscoverable();
 	            return true;
 	        case R.id.action_undo:
+	        	climbButton.setEnabled(false);
 	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.red_hold);
 	        	nodesConfigured--;
 	        	assignedNodes.pop();
