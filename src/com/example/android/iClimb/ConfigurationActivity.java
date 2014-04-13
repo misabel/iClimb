@@ -285,10 +285,6 @@ public class ConfigurationActivity extends Activity {
 	            serverIntent = new Intent(this, DeviceListActivity.class);
 	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
 	            return true;
-	        case R.id.discoverable:
-	            // Ensure this device is discoverable by others
-	            ensureDiscoverable();
-	            return true;
 	        case R.id.action_undo:
 	        	climbButton.setEnabled(false);
 	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.red_hold);

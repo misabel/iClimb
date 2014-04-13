@@ -65,18 +65,16 @@ public final class R {
     }
     public static final class id {
         public static final int RelativeLayout1=0x7f080000;
-        public static final int action_climb=0x7f080015;
-        public static final int action_configure=0x7f08001c;
-        public static final int action_load=0x7f080018;
-        public static final int action_reset=0x7f08001b;
-        public static final int action_save=0x7f080017;
-        public static final int action_settings=0x7f080010;
-        public static final int action_start_config=0x7f080014;
-        public static final int action_undo=0x7f080013;
+        public static final int action_climb=0x7f080013;
+        public static final int action_configure=0x7f08001a;
+        public static final int action_load=0x7f080016;
+        public static final int action_reset=0x7f080019;
+        public static final int action_save=0x7f080015;
+        public static final int action_start_config=0x7f080012;
+        public static final int action_undo=0x7f080011;
         public static final int button_scan=0x7f080009;
-        public static final int color_select=0x7f080016;
+        public static final int color_select=0x7f080014;
         public static final int delete_route=0x7f08000c;
-        public static final int discoverable=0x7f080012;
         public static final int load_route=0x7f08000b;
         public static final int loading_hold=0x7f080001;
         public static final int new_devices=0x7f080008;
@@ -85,14 +83,14 @@ public final class R {
         public static final int route_list=0x7f08000d;
         public static final int route_name=0x7f08000a;
         public static final int route_name_tf=0x7f08000e;
-        public static final int secure_connect_scan=0x7f080011;
+        public static final int secure_connect_scan=0x7f080010;
         public static final int status=0x7f080002;
         public static final int title_left_text=0x7f080003;
         public static final int title_new_devices=0x7f080007;
         public static final int title_paired_devices=0x7f080005;
         public static final int title_right_text=0x7f080004;
-        public static final int turn_off=0x7f080019;
-        public static final int undo=0x7f08001a;
+        public static final int turn_off=0x7f080017;
+        public static final int undo=0x7f080018;
     }
     public static final class layout {
         public static final int activity_configuration=0x7f030000;

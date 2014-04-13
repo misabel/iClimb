@@ -491,6 +491,7 @@ public class SplashScreen extends Activity {
     	{
     		String[] name = readMessage.split("\n");
         	wallName = name[name.length-2];
+        	Wall.setWallName(wallName);
             Log.d(TAG, "WALL NAME SET TO:" + wallName);
         	readMessage = null;
         	conversation_state = NUM_NODES;

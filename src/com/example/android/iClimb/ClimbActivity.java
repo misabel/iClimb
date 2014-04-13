@@ -146,7 +146,7 @@ public class ClimbActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
         
-        this.setTitle("Climb");
+        this.setTitle("Climbing " + Wall.getName());
         relativeLayoutParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         
         setContentView(mainRelativeLayout, relativeLayoutParameters);
@@ -250,10 +250,6 @@ public class ClimbActivity extends Activity {
 	            // Launch the DeviceListActivity to see devices and do scan
 	            serverIntent = new Intent(this, DeviceListActivity.class);
 	            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-	            return true;
-	        case R.id.discoverable:
-	            // Ensure this device is discoverable by others
-	            ensureDiscoverable();
 	            return true;
 	        case R.id.color_select: // Button that goes through all the colors that user can select
 				currColor++;
@@ -606,7 +602,7 @@ public class ClimbActivity extends Activity {
 		                {
 		                	saveRoute(route);
 		                }
-		                if(readMessage.contains("Route illuminated")){
+		                else if(readMessage.contains("illuminated")){
 		                	routeLoaded = false;
 		                }
 	           	    }

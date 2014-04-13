@@ -18,11 +18,6 @@
           android:icon="@android:drawable/ic_menu_search"
           android:title="@string/secure_connect"
           android:showAsAction="never" />
-    
-    <item android:id="@+id/discoverable"
-          android:icon="@android:drawable/ic_menu_mylocation"
-          android:title="@string/discoverable"
-          android:showAsAction="never" />
   
     <item 
         android:id="@+id/color_select" 
