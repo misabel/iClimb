@@ -544,6 +544,7 @@ public class SplashScreen extends Activity {
     		temp.setAddress((nodeParts[0]));
     		temp.setX(Float.parseFloat(nodeParts[1]));
     		temp.setY(Float.parseFloat(nodeParts[2]));
+    		//temp.setIcon(R.drawable.gray_hold);
             Log.d(TAG, "Node set to: " + temp.getAddress()+" , " + temp.getX() +" , " + temp.getY());
     		nodes.add(temp);
     		Wall.mapNode(temp);
@@ -594,6 +595,7 @@ public class SplashScreen extends Activity {
         		Node temp = tn;
         		temp = new Node (this, tn);
         		temp.setAddress((routeNodes[i]));
+        		temp.setIcon(R.drawable.gray_hold);
         		route.addNode(temp);
                 Log.d(TAG, "added Node" + temp.getAddress()+" to route " + route.getID() +"  named  " + route.getName());
         	}

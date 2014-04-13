@@ -116,6 +116,7 @@ public class ClimbActivity extends Activity {
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the chat services
     private BluetoothConnection mChatService = null;
+    private String origMessage;
     
     RelativeLayout mainRelativeLayout;
 	RelativeLayout.LayoutParams relativeLayoutParameters;
@@ -170,6 +171,9 @@ public class ClimbActivity extends Activity {
         {
         	Node reference = refNodes.get(i);
         	node = new Node(this, node.getBefore(), reference.getAddress(), reference.getX(), reference.getY());
+        	node.setIcon(R.drawable.gray_hold);
+    		Log.d(TAG, "CURRENT NODE IS: " + node.getAddress() + "with x y location of : " +node.getX()+  " " +node.getY());
+
         	node.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
@@ -205,45 +209,7 @@ public class ClimbActivity extends Activity {
         
     }
     
-    
-    
-    
-    private void setnodes()
-    {
-    	
-    	ArrayList<Node> refNodes = Wall.getNodes();
-        for(int i = 0 ; i < refNodes.size() ; i++)
-        {
-        	Node reference = refNodes.get(i);
-        	node = new Node(this, node.getBefore(), null, reference.getX(), reference.getY());
-        	
-        	node.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				
-				@Override
-				public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-					
-						Node n = (Node)button;
-						if(isChecked)
-						{
-							n.setColor(rgbEquiv[currColor]);
-							n.setIcon(holdIcons[currColor]);
-						}
-						
-						else
-						{
-							n.setColor("0 0 0");
-							n.setIcon(R.drawable.gray_hold);
-							
-						}
-						illuminateNode(n);
-				}
-			});
-        	
-	    	mainRelativeLayout.addView(node);
-        	nodes.add(node);
-        } 
-        Wall.saveNodes(nodes);
-    }
+
     
     @Override
     /*
@@ -421,7 +387,7 @@ public class ClimbActivity extends Activity {
 				if( nodes.get(i).getAddress().compareTo(routeToLoad.getNodes().get(j).getAddress())==0)
 				{	
 					nodes.get(i).turnOn();
-					nodes.get(i).setIcon(routeToLoad.getNodes().get(j).getIcon());
+					nodes.get(i).setIcon(holdIcons[currColor]);
 					
 					
 					break;
@@ -536,6 +502,9 @@ public class ClimbActivity extends Activity {
      */
     public void sendMessage(String message)
     {
+    	SystemClock.sleep(100);
+    	readMessage = null;
+    	origMessage = null;
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothConnection.STATE_CONNECTED)
         {
@@ -617,13 +586,19 @@ public class ClimbActivity extends Activity {
 	                byte[] readBuf = (byte[]) msg.obj;
 	                // construct a string from the valid bytes in the buffer
 	                readMessage = new String(readBuf, 0, msg.arg1);
-	                Log.d(TAG, "Received: " + readMessage);
-	                
-	                if(readMessage.contains("saveRoute"))
-	                {
-	                	saveRoute(route);
-	                }
-	                
+	           	    if (readMessage == null){
+	           	    	readMessage = "";
+	           	    }
+	           	    readMessage = readMessage + origMessage;
+	           	    if (readMessage.contains("<")){
+	           	    	Log.d(TAG, "Received: " + readMessage);
+		                
+		                if(readMessage.contains("saveRoute"))
+		                {
+		                	saveRoute(route);
+		                }
+	           	    }
+	                              
 	                //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
 	                //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
 	                break;
@@ -698,7 +673,7 @@ public class ClimbActivity extends Activity {
 
     private void illuminateRoute(Route r)
     {
-    	sendMessage (ILLUMINATE_ROUTE+ "\n" + r.getID()+ " " + rgbEquiv[currColor] );
+    	sendMessage (ILLUMINATE_ROUTE + "\n" + r.getID()+ " " + rgbEquiv[currColor] );
     }
     
     private void deleteRoute (Route r)
@@ -709,7 +684,11 @@ public class ClimbActivity extends Activity {
     private void saveRoute (Route r){
     	if (readMessage.contains("yes"))
     	{
+    		//r.setID(InteaerWall.getRoutes().size());
+    		String [] parts = readMessage.split("\n");
+    		r.setID(parts[2]);
     		Wall.saveRoute(r);
+    		
         	Toast.makeText(cmain, "Path has been saved", Toast.LENGTH_SHORT).show();
         	ArrayList<Node> route = r.getNodes();
         	String addresses = "";

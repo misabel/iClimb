@@ -166,8 +166,8 @@ public class ConfigurationActivity extends Activity {
     private void setnodes()
     {
     	
-    	//ArrayList<Node> refNodes = Wall.getNodes();
-        ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getAllNodes().values());
+    	ArrayList<Node> refNodes = Wall.getNodes();
+        //ArrayList<Node> refNodes = new ArrayList<Node>(Wall.getAllNodes().values());
         for(int i = 0 ; i < refNodes.size() ; i++)
         {
         	Node reference = refNodes.get(i);
@@ -193,7 +193,9 @@ public class ConfigurationActivity extends Activity {
                     	if (addressToAssign!= null){
                     		if (currNode.getAddress() == null)
                     		{
+                    			//currNode.setIcon(R.drawable.gray_hold);
                     			currNode.setAddress(addressToAssign);
+        			        	Log.d(TAG, "SETTING ADDRESS TO: " + currNode.getAddress());
                     			Wall.mapNode(currNode);
         			        	undoButton.setEnabled(true);
         			        	readMessage = null;
@@ -216,15 +218,14 @@ public class ConfigurationActivity extends Activity {
                     					.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
                     						public void onClick(DialogInterface dialog,int id) {
                     							//Yes Button Clicked
+                    							
                                     			currNode.setAddress(addressToAssign);
-                                    			currNode.setIcon(R.drawable.red_hold);
-                                    			SystemClock.sleep(1000);
-                                    			currNode.setIcon(R.drawable.green_hold);
+                        			        	Log.d(TAG, "SETTING ADDRESS TO: " + currNode.getAddress());
                                     			Wall.mapNode(currNode);
-                        			        	sendMessage("setXY\n" + currNode.getX() +" "+ currNode.getY());
                         			        	undoButton.setEnabled(true);
                         			        	readMessage = null;
                         			        	addressToAssign = null;
+                        			        	sendMessage("setXY\n" + currNode.getX() +" "+ currNode.getY());
                     						}
                     					  })
                     					.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
@@ -291,6 +292,8 @@ public class ConfigurationActivity extends Activity {
 	        case R.id.action_undo:
 	        	climbButton.setEnabled(false);
 	        	Wall.getMappedNode(currNode.getAddress()).setIcon(R.drawable.red_hold);
+	        	Wall.removeNode(Wall.getMappedNode(currNode.getAddress()));
+	        	//currNode.setAddress(null);
 	        	nodesConfigured--;
 	        	assignedNodes.pop();
 	        	if(assignedNodes.isEmpty() ){
@@ -545,12 +548,18 @@ public class ConfigurationActivity extends Activity {
         		configButton.setEnabled(true);
     	}
     	if (message.contains("Starting configuration")){
+    		configButton.setEnabled(false);
     		sendMessage("nextAddress");
     	}
     	if (message.contains("nextAddress")){
         	String[] nodeAddress = readMessage.split("\\r?\\n");
         	addressToAssign = null;
-        	addressToAssign = nodeAddress[nodeAddress.length-1];
+        	addressToAssign = nodeAddress[nodeAddress.length-2];
+    	}
+    	if (message.contains("undo")){
+        	String[] nodeAddress = readMessage.split("\\r?\\n");
+        	addressToAssign = null;
+        	addressToAssign = nodeAddress[nodeAddress.length-2];
     	}
     	if (message.contains("setXY")){
     		if(message.contains("yes")){

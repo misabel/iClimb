@@ -28,6 +28,12 @@ public class Wall
 		return name;
 	}
 	
+	public static void removeNode(Node n)
+	{
+		allNodes.remove(n);
+		mappedNodes.remove(n.getAddress());
+	}
+	
 	public static void setWallName(String n)
 	{
 		name = n;
