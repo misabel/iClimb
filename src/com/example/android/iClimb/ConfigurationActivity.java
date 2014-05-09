@@ -52,7 +52,11 @@ import android.view.View.OnTouchListener;
 
 
 /**
- * This is the main Activity that displays the current chat session.
+ * This class holds a conversation with the hub during which it connects
+ * the x.y locations of all holds placed by the user during the setup process
+ * with the appropriate node addresses associated with the nodes on the hub.
+ * The class communicates with the hub via bluetooth, and thus contains a 
+ * handler that relays messages between this class and the bluetoothConnection class.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @SuppressLint({ "InlinedApi", "HandlerLeak" })
@@ -161,8 +165,8 @@ public class ConfigurationActivity extends Activity {
      * This Method will call all saved nodes and will add an ontouch listener to each node that will respond to each touch by saving
      * the current address to the touched node and sending a message to the hub requesting the next address be sent.
      * */
-    Node currNode;
     
+    Node currNode;
     private void setnodes()
     {
     	
@@ -250,14 +254,20 @@ public class ConfigurationActivity extends Activity {
 
             });
         	
+        	//add nodes to layout
 	    	configRelativeLayout.addView(node);
+	    	//save nodes in node class
         	nodes.add(node);
         }
+        //save all added nodes to wall class
         Wall.saveNodes(nodes);
     }
     
     @Override
 
+    /**
+     * Retrieves menu options to create menu bar 
+     * */
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
@@ -276,6 +286,9 @@ public class ConfigurationActivity extends Activity {
     
     @Override
 
+    /**
+     * handles selections made from the menu bar
+     * */
     public boolean onOptionsItemSelected(MenuItem item) 
     {
         Intent serverIntent = null;
@@ -421,12 +434,20 @@ public class ConfigurationActivity extends Activity {
         }
     }
 
+    /**
+     * Sets bluetooth connection device.
+     * @param resID id of connected device.
+     */
     private final void setStatus(int resId) 
     {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(resId);
     }
 
+    /**
+     * Sets bluetooth connection status.
+     * @param subTitle the status of connection message.
+     */
     private final void setStatus(CharSequence subTitle)
     {
         final ActionBar actionBar = getActionBar();
@@ -443,7 +464,10 @@ public class ConfigurationActivity extends Activity {
         }
     }
 
-    // The Handler that gets information back from the BluetoothChatService
+    /**
+     * The Handler that gets information back from the BluetoothCommunication class 
+     * Handles the bluetooth communication between this class and bluetoothConnection class
+     */
     private final Handler mHandler = new Handler()
     {
         @Override
@@ -511,7 +535,11 @@ public class ConfigurationActivity extends Activity {
             }
         }
     };
-
+    
+    /**
+     * Gets called upon user's selection of a device to which to connect to, retreives device name
+     * and information and attempts to make a connection
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
@@ -542,6 +570,12 @@ public class ConfigurationActivity extends Activity {
         }
     }
 
+    /**
+     * Private class that gets called when the handler receives a message. Based on the
+     * contents of the message, it will do the following: parse the message to retrieve
+     * the necessary information, process the received data, and reply to the hub with 
+     * the appropriate message to continue the 'conversation'.
+     */
     private void handleHubMessage(String message){
     	if (message.contains("setWallName")){
         		configButton.setEnabled(true);

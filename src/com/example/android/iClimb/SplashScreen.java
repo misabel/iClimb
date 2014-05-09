@@ -48,7 +48,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * This is the main Activity that displays the current chat session.
+ * This class does all the initial communication between the hub and the application.
+ * Through a 'conversation' with the hub, it determines the configuration status of the
+ * wall. If the wall has been configured, It will retrieve node x,y locations,
+ * route names and ids, as well as the walls name and appropriately save them, it will then
+ * redirect the user to the climb page where they may start climbing. 
+ * On the other hand, if the wall is not configured, it will redirect to the setup page.
+ * This class contains a handler that handles all necessary communication between itself
+ * and the bluetoohConnection class.
+ * 
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @SuppressLint({ "InlinedApi", "HandlerLeak" })
@@ -329,11 +337,19 @@ public class SplashScreen extends Activity {
         }
     }
 
+    /**
+     * Sets bluetooth connection device.
+     * @param resID id of connected device.
+     */
     private final void setStatus(int resId) {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(resId);
     }
 
+    /**
+     * Sets bluetooth connection status.
+     * @param subTitle the status of connection message.
+     */
     private final void setStatus(CharSequence subTitle) {
         final ActionBar actionBar = getActionBar();
         actionBar.setSubtitle(subTitle);
@@ -346,7 +362,10 @@ public class SplashScreen extends Activity {
         }
     }
 
-    // The Handler that gets information back from the BluetoothChatService
+    /**
+     * The Handler that gets information back from the BluetoothCommunication class 
+     * Handles the bluetooth communication between this class and bluetoothConnection class
+     */
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -409,12 +428,20 @@ public class SplashScreen extends Activity {
         }
     };
 
+    /**
+     * Gets called upon user's selection of a device to which to connect to, retreives device name
+     * and information and attempts to make a connection
+     */
     public void attemptConnection()
     {
         Intent serverIntent = new Intent(getApplicationContext(), DeviceListActivity.class);
         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE); 
     }
     
+    
+    /**
+     * Handles user's selection from the bluetooth options menu
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
@@ -439,6 +466,10 @@ public class SplashScreen extends Activity {
         }
     }
 
+    /**
+     * receives data used to make bluetooth connection, and attempts to make a connection to the device 
+     * specified within the received data
+     */
     private void connectDevice(Intent data, boolean secure) {
         // Get the device MAC address
         String address = data.getExtras()
@@ -449,21 +480,27 @@ public class SplashScreen extends Activity {
         mChatService.connect(device, secure);
     }
     
-    
+    /**
+     * Private class that gets called when the handler receives a message. Based on the
+     * contents of the message, it will do the following: parse the message to retrieve
+     * the necessary information, process the received data, and reply to the hub with 
+     * the appropriate message to continue the 'conversation'.
+     */
     private void bluetoothMessgeHandler (String btMessage)
     {
     	messageToSend = null;
+    	//connection established with hub, ask about configuration status
     	if (btMessage.contains(M_HELLO))
     	{
     		readMessage = null;
         	conversation_state = CONFIG;
-        	//sendMessage("config?");
         	messageToSend = "config?";
             Log.d(TAG, "sent config?");
     	}
-    	
+    	//determine status of configuration
     	if (btMessage.contains(M_CONFIG) )
     	{
+    		//if configured, retrieve wall name
     		if(readMessage.contains("yes"))
     		{
                 Log.d(TAG, "Wall configured");
@@ -471,7 +508,7 @@ public class SplashScreen extends Activity {
             	readMessage = null;
             	messageToSend = "wallName";
         	}
-    		
+    		//if not configured ask if wall has been named anyways
         	else if (readMessage.contains("no"))
         	{
                 Log.d(TAG, "Wall not configured");
@@ -480,13 +517,14 @@ public class SplashScreen extends Activity {
         		messageToSend = "wallName";
         	}
     		
+    		//if response is not appropriate, ask about configuration staus again
         	else
         	{
         		messageToSend = "config?";
         	}
     		conversation_state = WALL_NAME;
     	}
-    	
+    	//parse out wall name and set it in wall class
     	if (btMessage.contains(M_WALL_NAME))
     	{
     		String[] name = readMessage.split("\n");
@@ -498,6 +536,7 @@ public class SplashScreen extends Activity {
        	    SystemClock.sleep(100);        	
        	    messageToSend = "#nodes";
     	}
+    	//determine the number of active nodes on the wall for the setup process
     	if (btMessage.contains(M_NUM_NODES))
     	{
         	String[] nodes = readMessage.split("\\r?\\n");
@@ -535,6 +574,7 @@ public class SplashScreen extends Activity {
         	}
 
     	}
+    	//ask about next nodes, parse message, and set x,y coordinates for nodes
     	if (btMessage.contains(M_NEXT_NODE))
     	{
         	String[] parts = readMessage.split("\n");
@@ -563,7 +603,7 @@ public class SplashScreen extends Activity {
     		nodeCount++;
     		
     	}
-    	
+    	//determine number of saved routes on hub
     	if (btMessage.contains(M_NUM_ROUTES))
     	{
     		String[] routes = readMessage.split("\n");
@@ -582,7 +622,7 @@ public class SplashScreen extends Activity {
     			conversation_state = START_CLIMB;
     		}
     	}
-    	
+    	//determine route names and id's, and node addresses in the node
     	if (btMessage.contains(M_NEXT_ROUTE))
     	{
         	String[] routeParts = readMessage.split("\n");
@@ -617,6 +657,8 @@ public class SplashScreen extends Activity {
     		}
     		routeCount++;
     	}
+    	
+    	//if conversation is over, go to climb page
     	if (btMessage.contains(M_START_CLIMB))
     	{
     		readMessage = null;
@@ -647,6 +689,7 @@ public class SplashScreen extends Activity {
     	
     }
     
+    //keeps track of the state of the conversation, in case bluetooth conversation is jumbled/loses track
     private String bluetoothConversation (int currState)
     {
     	String message = null;

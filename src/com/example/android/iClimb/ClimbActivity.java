@@ -59,7 +59,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * This is the main Activity that displays the current chat session.
+ * This is the Climbing Activity that displays the virtual climbing wall, 
+ * and is the main user interface through which the user will interact with 
+ * the wall, create their routes, save/delete routes, and illuminate the
+ * holds they wish to climb. The class communicates with the hub via 
+ * bluetooth, and thus contains a handler that relays messages between
+ * this class and the bluetoothConnection class.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @SuppressLint({ "InlinedApi", "HandlerLeak" })
@@ -548,7 +553,10 @@ public class ClimbActivity extends Activity {
         }
     }
 
-    // The Handler that gets information back from the BluetoothChatService
+    /**
+     * The Handler that gets information back from the BluetoothCommunication class 
+     * Handles the bluetooth communication between this class and bluetoothConnection class
+     */
     private final Handler mHandler = new Handler() 
     {
         @Override
@@ -606,9 +614,6 @@ public class ClimbActivity extends Activity {
 		                	routeLoaded = false;
 		                }
 	           	    }
-	                              
-	                //Toast.makeText(getApplicationContext(), "Received Message" + readMessage,  Toast.LENGTH_SHORT).show();
-	                //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
 	                break;
 	                
 	            case MESSAGE_DEVICE_NAME:
@@ -667,28 +672,40 @@ public class ClimbActivity extends Activity {
         mChatService.connect(device, secure);
     }
     
-    /*
-    //Bluetooth commands
-    public static final String ILLUMINATE_NODE = "illNode";
-    public static final String ILLUMINATE_Route = "illRoute";
-    public static final String SAVE_ROUTE = "saveRoute";
-    public static final String DELETE_ROUTE = "deleteRoute";*/
-    
+    /**
+     * BLuetooth command to illuminateNode sends a message to hub with
+     * node address, and the user's selected color to light the appropriate
+     * hold
+    */
     private void illuminateNode(Node n)
     {
     	sendMessage (ILLUMINATE_NODE + "\n" + n.getAddress()+ " " + n.getColor());
     }
 
+    /**
+     * BLuetooth command to illuminateRoute sends a message to hub with
+     * user's selected route id, and the user's selected in which to illuminate
+     * the route
+    */
     private void illuminateRoute(Route r)
     {
     	sendMessage (ILLUMINATE_ROUTE + "\n" + r.getID()+ " " + rgbEquiv[currColor] );
     }
     
+    /**
+     * BLuetooth command to DeleteRoute sends a message to hub with
+     * user's selected route to delete
+    */
     private void deleteRoute (Route r)
     {
     	sendMessage(DELETE_ROUTE + "\n" + r.getID());
     }
     
+    /**
+     * BLuetooth command to Save a Route sends a message to hub with
+     * all node addresses saved in the user's currently selected route
+     * for the hub to save.
+    */
     private void saveRoute (Route r){
     	if (readMessage.contains("yes"))
     	{
